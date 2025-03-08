@@ -1,6 +1,3 @@
-import React from "react";
-import { BarChart, TrendingUp, ArrowUpRight, ArrowDownRight, User, Search, ArrowLeft } from "lucide-react"
-
 export default function PlayerStats() {
   return (
     <div className="min-h-screen bg-gray-100">

@@ -1,3 +1,4 @@
+'use client'
 import { BarChart, TrendingUp, ArrowUpRight, ArrowDownRight, User, Search, ArrowLeft } from "lucide-react"
 
 export default function PlayerStats() {
@@ -7,9 +8,9 @@ export default function PlayerStats() {
         <div className="container mx-auto">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <button className="p-2 rounded-full hover:bg-gray-100">
+                <button className="p-2 rounded-full hover:bg-gray-100" onClick={() => window.history.back()}>
                 <ArrowLeft className="h-5 w-5" />
-              </button>
+                </button>
               <h1 className="text-xl font-bold">Player Statistics</h1>
             </div>
             <div className="relative w-64">
