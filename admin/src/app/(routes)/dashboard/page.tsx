@@ -9,7 +9,7 @@ interface Statistics {
   highestRunScorer: {
     name: string;
     totalruns: number;
-  };
+  }; 
   highestWicketTaker: {
     name: string;
     wickets: number;
