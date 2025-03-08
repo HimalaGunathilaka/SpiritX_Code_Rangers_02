@@ -1,8 +1,54 @@
 'use client';
-import { Search, Filter, DollarSign, User, ArrowLeft, Info } from "lucide-react"
+
+import {  User } from "lucide-react"
 import { PlayerCard ,SelectedPlayerCard} from "./components"
 
+import { useState } from 'react';
+import { DollarSign, ArrowLeft, Info, Search, Filter } from "lucide-react";
+import PlayerCard, { PlayerInfo } from '@/components/player-card';
+
+
 export default function CreateTeam() {
+  const [players, setPlayers] = useState<PlayerInfo[]>([
+    {
+      id: 1,
+      name: "Kasun Rajapaksa",
+      university: "University of Colombo",
+      role: "batsman",
+      price: 1200,
+      stats: {
+        batStrikeRate: 138.5,
+        batAverage: 45.2,
+        bowlStrikeRate: 0,
+        economy: 0,
+      }
+    },
+    {
+      id: 2,
+      name: "Dinesh Fernando",
+      university: "University of Peradeniya",
+      role: "batsman",
+      price: 950,
+      stats: {
+        batStrikeRate: 125.3,
+        batAverage: 38.7,
+        bowlStrikeRate: 0,
+        economy: 0,
+      }
+    },
+    // More players can be added here
+  ]);
+
+  const [selectedPlayers, setSelectedPlayers] = useState<number[]>([2]);
+
+  const handleAddToTeam = (playerId: number) => {
+    if (selectedPlayers.includes(playerId)) {
+      setSelectedPlayers(selectedPlayers.filter(id => id !== playerId));
+    } else {
+      setSelectedPlayers([...selectedPlayers, playerId]);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white border-b p-4 sticky top-0 z-10">
@@ -66,85 +112,13 @@ export default function CreateTeam() {
                 </div>
 
                 <div className="space-y-4">
-                  <PlayerCard
-                    name="Kasun Rajapaksa"
-                    university="University of Colombo"
-                    stats={{
-                      points: 320,
-                      batStrikeRate: 138.5,
-                      batAverage: 45.2,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={1200}
-                    selected={false}
-                  />
-                  <PlayerCard
-                    name="Dinesh Fernando"
-                    university="University of Peradeniya"
-                    stats={{
-                      points: 280,
-                      batStrikeRate: 125.3,
-                      batAverage: 38.7,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={950}
-                    selected={true}
-                  />
-                  <PlayerCard
-                    name="Amal Perera"
-                    university="University of Moratuwa"
-                    stats={{
-                      points: 420,
-                      batStrikeRate: 142.8,
-                      batAverage: 52.1,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={1500}
-                    selected={false}
-                  />
-                  <PlayerCard
-                    name="Sunil Bandara"
-                    university="University of Kelaniya"
-                    stats={{
-                      points: 210,
-                      batStrikeRate: 118.2,
-                      batAverage: 32.5,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={800}
-                    selected={false}
-                  />
-                  
-                  <PlayerCard
-                    name="Nuwan Silva"
-                    university="University of Colombo"
-                    stats={{
-                      points: 290,
-                      batStrikeRate: 95.2,
-                      batAverage: 18.4,
-                      bowlStrikeRate: 22.3,
-                      economy: 7.2,
-                    }}
-                    price={1100}
-                    selected={false}
-                  />
-                  <PlayerCard
-                    name="Lasith Kumara"
-                    university="University of Jaffna"
-                    stats={{
-                      points: 350,
-                      batStrikeRate: 68.5,
-                      batAverage: 12.3,
-                      bowlStrikeRate: 19.1,
-                      economy: 6.8,
-                    }}
-                    price={1300}
-                    selected={false}
-                  />
+                  {players.map(player => (
+                    <PlayerCard
+                      key={player.id}
+                      player={player}
+                      onAddToTeam={handleAddToTeam}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
@@ -247,5 +221,6 @@ export default function CreateTeam() {
         </div>
       </main>
     </div>
+
   )
 }

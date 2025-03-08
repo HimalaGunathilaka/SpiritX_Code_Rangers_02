@@ -52,7 +52,6 @@ export default function ChatbotPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
               <h1 className="text-xl font-bold">Spiriter AI Assistant</h1>
-              </button>
               <h1 className="text-xl font-bold text-black">Spiriter AI Assistant</h1>
             </div>
           </div>
