@@ -1,7 +1,6 @@
 {
-  "/(pages)/(user)/create-team/page": "app/(pages)/(user)/create-team/page.js",
+  "/(pages)/bot/page": "app/(pages)/bot/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/(pages)/(user)/homepage/page": "app/(pages)/(user)/homepage/page.js",
-  "/(pages)/(user)/chatbot/page": "app/(pages)/(user)/chatbot/page.js"
+  "/api/bot/route": "app/api/bot/route.js",
+  "/(pages)/(user)/create-team/page": "app/(pages)/(user)/create-team/page.js"
 }

@@ -70,8 +70,8 @@ export default function ChatbotPage() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow h-[calc(100vh-12rem)] flex flex-col">
               <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold">Chat with Spiriter</h2>
-                <p className="text-sm text-gray-500">Get personalized advice for your fantasy cricket team</p>
+                <h2 className="text-lg font-bold text-black">Chat with Spiriter</h2>
+                <p className="text-sm text-gray-700">Get personalized advice for your fantasy cricket team</p>
               </div>
               <div className="flex flex-col h-[calc(100%-5rem)] p-4">
                 <div className="flex-1 overflow-y-auto mb-4 space-y-4">
