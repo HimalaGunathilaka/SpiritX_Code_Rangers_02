@@ -1,0 +1,42 @@
+### Check user credentials
+POST http://localhost:3000/api/user
+Content-Type: application/json
+
+{
+  "name": "testuser",
+  "password": "testpassword"
+}
+
+###
+
+### Create a new user
+POST http://localhost:3000/api/user
+Content-Type: application/json
+
+{
+  "name": "newuser",
+  "password": "newpassword",
+  "budget": 1000
+}
+
+###
+
+### Add a team member by user ID
+PUT http://localhost:3000/api/user
+Content-Type: application/json
+
+{
+  "userId": "67cc39310e8e5d2de616a75a",  
+  "playerId": "67cbc5535178249345daa9db" 
+}
+
+###
+
+### Remove a team member by user ID
+PATCH  http://localhost:3000/api/user
+Content-Type: application/json
+
+{
+  "userId": "67cc39310e8e5d2de616a75a",  
+  "playerId": "67cbc5535178249345daa9db"  
+}

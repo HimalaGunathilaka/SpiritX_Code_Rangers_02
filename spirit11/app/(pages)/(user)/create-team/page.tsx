@@ -1,7 +1,12 @@
 'use client';
+
+import {  User } from "lucide-react"
+import { PlayerCard ,SelectedPlayerCard} from "./components"
+
 import { useState } from 'react';
 import { DollarSign, ArrowLeft, Info, Search, Filter } from "lucide-react";
 import PlayerCard, { PlayerInfo } from '@/components/player-card';
+
 
 export default function CreateTeam() {
   const [players, setPlayers] = useState<PlayerInfo[]>([
@@ -216,35 +221,6 @@ export default function CreateTeam() {
         </div>
       </main>
     </div>
-  );
-}
 
-interface SelectedPlayerCardProps {
-  name: string;
-  university: string;
-  type: string;
-  price: number;
-}
-
-function SelectedPlayerCard({ name, university, type, price }: SelectedPlayerCardProps) {
-  return (
-    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-md">
-      <div className="flex items-center space-x-3">
-        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-        </div>
-        <div>
-          <p className="font-medium text-sm">{name}</p>
-          <p className="text-xs text-gray-500">{university}</p>
-        </div>
-      </div>
-      <div className="text-right">
-        <span className="inline-block px-2 py-0.5 text-xs border border-gray-300 rounded-full mb-1">{type}</span>
-        <p className="text-xs font-medium">${price}</p>
-      </div>
-    </div>
   )
 }
-

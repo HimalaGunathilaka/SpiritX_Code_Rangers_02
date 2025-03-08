@@ -40,7 +40,12 @@ const PlayerSchema = new mongoose.Schema({
   runsconceded: {
     type: Number,
     required: true,
-  }
+  },
+  available: {
+    type: Boolean,
+    required: true,
+  },
+  
 }, { timestamps: false, versionKey: false });
 
 export default mongoose.models.Player || mongoose.model('Player', PlayerSchema);

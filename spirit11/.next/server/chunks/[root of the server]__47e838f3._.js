@@ -73,7 +73,7 @@ var __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$
 ;
 const connectMongo = async ()=>{
     const mongoUrl = process.env.MONGO_URL;
-    console.log("Connecting to mongo with URL:", mongoUrl);
+    // console.log("Connecting to mongo with URL:", mongoUrl);
     if (!mongoUrl) {
         throw new Error("MONGO_URL environment variable is not defined");
     }
@@ -134,6 +134,10 @@ const PlayerSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$mongo
     },
     runsconceded: {
         type: Number,
+        required: true
+    },
+    available: {
+        type: Boolean,
         required: true
     }
 }, {
