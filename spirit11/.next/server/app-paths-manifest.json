@@ -1,5 +1,4 @@
 {
-
   "/(pages)/(user)/chatbot/page": "app/(pages)/(user)/chatbot/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/_not-found/page": "app/_not-found/page.js",
@@ -16,5 +15,4 @@
   "/(pages)/(user)/players/page": "app/(pages)/(user)/players/page.js",
   "/(pages)/(user)/user/page": "app/(pages)/(user)/user/page.js",
   "/(pages)/user/page": "app/(pages)/user/page.js"
-
 }

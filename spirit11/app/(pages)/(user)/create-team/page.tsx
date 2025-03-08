@@ -1,11 +1,11 @@
 'use client';
 
 import {  User } from "lucide-react"
-import { PlayerCard ,SelectedPlayerCard} from "./components"
+import { SelectedPlayerCard } from "./components"
 
 import { useState } from 'react';
 import { DollarSign, ArrowLeft, Info, Search, Filter } from "lucide-react";
-import PlayerCard, { PlayerInfo } from '@/components/player-card';
+import { PlayerInfo } from '@/components/player-card';
 
 
 export default function CreateTeam() {
@@ -113,11 +113,21 @@ export default function CreateTeam() {
 
                 <div className="space-y-4">
                   {players.map(player => (
-                    <PlayerCard
-                      key={player.id}
-                      player={player}
-                      onAddToTeam={handleAddToTeam}
-                    />
+                    <div key={player.id} className="flex items-center justify-between p-4 border rounded-md">
+                      <div>
+                        <h3 className="text-lg font-medium">{player.name}</h3>
+                        <p className="text-sm text-gray-500">{player.university}</p>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <p className="text-sm font-medium">${player.price}</p>
+                        <button
+                          className={`px-4 py-2 rounded-md ${selectedPlayers.includes(player.id) ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}
+                          onClick={() => handleAddToTeam(player.id)}
+                        >
+                          {selectedPlayers.includes(player.id) ? 'Remove' : 'Add'}
+                        </button>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
