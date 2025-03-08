@@ -53,8 +53,8 @@ export const PATCH = async (request: Request) => {
     return new NextResponse(JSON.stringify(updatedPlayer), { status: 200 });
   } catch (error: any) {
     return new NextResponse("Error in updating player: " + error.message, {
-      status: 500,
-    });
+      status: 500 },
+    );
   }
 };
 
@@ -82,7 +82,7 @@ export const DELETE = async (request: Request) => {
     return new NextResponse(JSON.stringify(deletedPlayer), { status: 200 });
   } catch (error: any) {
     return new NextResponse("Error in deleting player: " + error.message, {
-      status: 500,
-    });
+      status: 500 },
+    );
   }
 };
