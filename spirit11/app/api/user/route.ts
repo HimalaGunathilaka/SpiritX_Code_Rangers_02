@@ -4,30 +4,19 @@ import connectMongo from "@/lib/dbconfig";
 import User from "@/models/user";
 import Player from "@/models/player";
 
-export const GET = async (request: Request) => {
-  try {
-    const url = new URL(request.url);
-    const userId = url.searchParams.get('id');
-
-    await connectMongo();
-
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      return new NextResponse("Invalid User ID", { status: 400 });
+  // GET all users
+  export const GET = async () => {
+    try {
+      await connectMongo();
+      const users = await User.find();
+      return new NextResponse(JSON.stringify(users), { status: 200 });
+    } catch (error: any) {
+      return new NextResponse("Error in fetching players: " + error.message, {
+        status: 500,
+      });
     }
+  };
 
-    const user = await User.findById(userId).populate('team');
-
-    if (!user) {
-      return new NextResponse("User not found", { status: 404 });
-    }
-
-    return new NextResponse(JSON.stringify(user), { status: 200 });
-  } catch (error: any) {
-    return new NextResponse("Error in fetching user information: " + error.message, {
-      status: 500,
-    });
-  }
-};
 
 // POST to create a new user
 export const POST = async (request: Request) => {

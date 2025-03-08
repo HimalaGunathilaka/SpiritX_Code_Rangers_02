@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  
 }, { timestamps: true, versionKey: false });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

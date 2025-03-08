@@ -163,7 +163,6 @@
     --tracking-wider: .05em;
     --radius-md: .375rem;
     --radius-lg: .5rem;
-    --animate-spin: spin 1s linear infinite;
     --default-transition-duration: .15s;
     --default-transition-timing-function: cubic-bezier(.4, 0, .2, 1);
     --default-font-family: var(--font-sans);
@@ -807,10 +806,6 @@
     transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);
   }
 
-  .animate-spin {
-    animation: var(--animate-spin);
-  }
-
   .cursor-not-allowed {
     cursor: not-allowed;
   }
@@ -1045,11 +1040,6 @@
     border-width: 2px;
   }
 
-  .border-4 {
-    border-style: var(--tw-border-style);
-    border-width: 4px;
-  }
-
   .border-t {
     border-top-style: var(--tw-border-style);
     border-top-width: 1px;
@@ -1117,10 +1107,6 @@
 
   .border-yellow-500 {
     border-color: var(--color-yellow-500);
-  }
-
-  .border-r-transparent {
-    border-right-color: #0000;
   }
 
   .bg-black\/\[\.05\] {
@@ -2208,12 +2194,6 @@
   }
 
   @media (width >= 48rem) {
-    .md\:grid-cols-5 {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-  }
-
-  @media (width >= 48rem) {
     .md\:flex-col {
       flex-direction: column;
     }
@@ -2797,12 +2777,6 @@ body {
 @property --tw-drop-shadow {
   syntax: "*";
   inherits: false
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 
