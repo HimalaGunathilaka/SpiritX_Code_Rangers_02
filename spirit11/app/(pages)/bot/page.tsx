@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 
 interface Message {
     role: 'user' | 'bot';
     content: string;
 }
 
-export default function ChatbotPage() {
+export default function BotPage() {
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([
         {
@@ -47,12 +48,14 @@ export default function ChatbotPage() {
         <div className="container mx-auto">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
+
                 <button className="p-2 rounded-full hover:bg-gray-100" onClick={() => window.history.back()}></button>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
               <h1 className="text-xl font-bold">Spiriter AI Assistant</h1>
               <h1 className="text-xl font-bold text-black">Spiriter AI Assistant</h1>
+
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { Search, Filter, DollarSign, ArrowLeft, Info } from "lucide-react";
 import { PlayerCard, SelectedPlayerCard } from "./components";
 import { useEffect, useState } from 'react';
 
+
 export default function CreateTeam() {
   // fetch available players
   interface Player {
@@ -12,6 +13,7 @@ export default function CreateTeam() {
     value: number;
     category: string;
   }
+
 
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -144,6 +146,7 @@ export default function CreateTeam() {
                 </div>
 
                 <div className="space-y-4">
+
                   {currentPlayers.map((player) => (
                     <PlayerCard
                       key={player._id}
@@ -153,6 +156,7 @@ export default function CreateTeam() {
                       category={player.category}
                       selected={false}
                     />
+
                   ))}
                 </div>
                 {indexOfLastPlayer < filteredPlayers.length && (
