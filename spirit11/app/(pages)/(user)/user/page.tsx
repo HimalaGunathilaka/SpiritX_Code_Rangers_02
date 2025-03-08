@@ -51,6 +51,50 @@ export default function Dashboard() {
     }
   ];
 
+  // Add team players mock data
+  const teamPlayers = [
+    {
+      id: 1,
+      name: "Kumar Sangakkara",
+      role: "Batsman",
+      university: "University of Colombo",
+      stats: { runs: 845, average: 52.8, strikeRate: 134.2 },
+      image: "/players/player1.jpg"
+    },
+    {
+      id: 2,
+      name: "Muttiah Muralitharan",
+      role: "Bowler",
+      university: "University of Peradeniya",
+      stats: { wickets: 24, economy: 6.2, average: 18.4 },
+      image: "/players/player2.jpg"
+    },
+    {
+      id: 3,
+      name: "Angelo Mathews",
+      role: "All-Rounder",
+      university: "University of Moratuwa",
+      stats: { runs: 320, wickets: 12, average: 28.5 },
+      image: "/players/player3.jpg"
+    },
+    {
+      id: 4,
+      name: "Dinesh Chandimal",
+      role: "Wicket Keeper",
+      university: "University of Kelaniya",
+      stats: { runs: 295, dismissals: 15, average: 32.6 },
+      image: "/players/player4.jpg"
+    },
+    {
+      id: 5,
+      name: "Lasith Malinga",
+      role: "Bowler",
+      university: "University of Sri Jayewardenepura",
+      stats: { wickets: 18, economy: 7.1, average: 22.3 },
+      image: "/players/player5.jpg"
+    }
+  ];
+
   const [activeTab, setActiveTab] = useState("team");
 
   return (
@@ -317,19 +361,86 @@ export default function Dashboard() {
                         </div>
                       </div>
                       
-                      <div className="flex justify-between">
-                        <Link 
-                          href="/team" 
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
-                        >
-                          View Full Team
-                        </Link>
-                        <Link 
-                          href="/leaderboard" 
-                          className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
-                        >
-                          View Ranking
-                        </Link>
+                      <div className="mt-6">
+                        <h4 className="text-sm font-medium text-gray-500 mb-3">Team Roster</h4>
+                        <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                          <table className="min-w-full divide-y divide-gray-300">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Player</th>
+                                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
+                                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">University</th>
+                                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stats</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200 bg-white">
+                              {teamPlayers.map((player) => (
+                                <tr key={player.id}>
+                                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
+                                    <div className="flex items-center">
+                                      <div className="h-10 w-10 flex-shrink-0 rounded-full bg-gray-200">
+                                        {/* Player image placeholder */}
+                                        <div className="h-10 w-10 rounded-full flex items-center justify-center text-gray-500 font-medium">
+                                          {player.name.substring(0, 2)}
+                                        </div>
+                                      </div>
+                                      <div className="ml-4">
+                                        <div className="font-medium text-gray-900">{player.name}</div>
+                                        {player.role === "All-Rounder" && (
+                                          <div className="text-gray-500">Captain</div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                      player.role === "Batsman" ? "bg-blue-100 text-blue-800" : 
+                                      player.role === "Bowler" ? "bg-green-100 text-green-800" :
+                                      player.role === "All-Rounder" ? "bg-purple-100 text-purple-800" :
+                                      "bg-yellow-100 text-yellow-800"
+                                    }`}>
+                                      {player.role}
+                                    </span>
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {player.university}
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {player.role === "Batsman" && (
+                                      <div>
+                                        <div>{player.stats.runs} runs</div>
+                                        <div className="text-xs">Avg: {player.stats.average} | SR: {player.stats.strikeRate}</div>
+                                      </div>
+                                    )}
+                                    {player.role === "Bowler" && (
+                                      <div>
+                                        <div>{player.stats.wickets} wickets</div>
+                                        <div className="text-xs">Eco: {player.stats.economy} | Avg: {player.stats.average}</div>
+                                      </div>
+                                    )}
+                                    {player.role === "All-Rounder" && (
+                                      <div>
+                                        <div>{player.stats.runs} runs, {player.stats.wickets} wickets</div>
+                                        <div className="text-xs">Avg: {player.stats.average}</div>
+                                      </div>
+                                    )}
+                                    {player.role === "Wicket Keeper" && (
+                                      <div>
+                                        <div>{player.stats.runs} runs, {player.stats.dismissals} dismissals</div>
+                                        <div className="text-xs">Avg: {player.stats.average}</div>
+                                      </div>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className="mt-4 text-right">
+                          <Link href="/team" className="text-sm text-green-600 hover:text-green-500">
+                            View full team details →
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   ) : (

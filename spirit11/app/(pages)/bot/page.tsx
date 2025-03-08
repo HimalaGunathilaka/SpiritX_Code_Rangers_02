@@ -53,7 +53,6 @@ export default function ChatbotPage() {
                 </svg>
                 </button>
               <h1 className="text-xl font-bold">Spiriter AI Assistant</h1>
-              </button>
               <h1 className="text-xl font-bold text-black">Spiriter AI Assistant</h1>
             </div>
           </div>

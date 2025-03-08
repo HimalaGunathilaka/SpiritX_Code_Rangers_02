@@ -13,5 +13,6 @@
   "/(pages)/(user)/member/page": "app/(pages)/(user)/member/page.js",
   "/(pages)/(user)/player/page": "app/(pages)/(user)/player/page.js",
   "/(pages)/(user)/players/page": "app/(pages)/(user)/players/page.js",
-  "/(pages)/(user)/user/page": "app/(pages)/(user)/user/page.js"
+  "/(pages)/(user)/user/page": "app/(pages)/(user)/user/page.js",
+  "/(pages)/user/page": "app/(pages)/user/page.js"
 }
