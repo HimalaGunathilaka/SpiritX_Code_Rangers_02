@@ -1,9 +1,64 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+interface Statistics {
+  overallRuns: number;
+  overallWickets: number;
+  highestRunScorer: {
+    name: string;
+    totalruns: number;
+  }; 
+  highestWicketTaker: {
+    name: string;
+    wickets: number;
+  };
+}
+
 export default function DashboardPage() {
+  const [statistics, setStatistics] = useState<Statistics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStatistics = async () => {
+    try {
+      const response = await fetch('/api/statistics');
+      if (!response.ok) {
+        throw new Error('Failed to fetch statistics');
+      }
+      const data = await response.json();
+      setStatistics(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStatistics();
+    // Set up polling for real-time updates
+    const interval = setInterval(fetchStatistics, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -28,9 +83,9 @@ export default function DashboardPage() {
               </svg>
             </div>
             <div className="ml-4">
-              <h2 className="text-sm font-medium text-gray-600">Total Players</h2>
-              <p className="text-2xl font-semibold text-gray-900">1,234</p>
-              <p className="text-sm text-green-600">+12% from last month</p>
+              <h2 className="text-sm font-medium text-gray-600">Overall Runs</h2>
+              <p className="text-2xl font-semibold text-gray-900">{statistics?.overallRuns || 0}</p>
+              <p className="text-sm text-green-600">Total runs scored by all players</p>
             </div>
           </div>
         </div>
@@ -43,9 +98,9 @@ export default function DashboardPage() {
               </svg>
             </div>
             <div className="ml-4">
-              <h2 className="text-sm font-medium text-gray-600">Active Tournaments</h2>
-              <p className="text-2xl font-semibold text-gray-900">12</p>
-              <p className="text-sm text-blue-600">3 ending this week</p>
+              <h2 className="text-sm font-medium text-gray-600">Overall Wickets</h2>
+              <p className="text-2xl font-semibold text-gray-900">{statistics?.overallWickets || 0}</p>
+              <p className="text-sm text-blue-600">Total wickets taken by all players</p>
             </div>
           </div>
         </div>
@@ -58,9 +113,9 @@ export default function DashboardPage() {
               </svg>
             </div>
             <div className="ml-4">
-              <h2 className="text-sm font-medium text-gray-600">Total Revenue</h2>
-              <p className="text-2xl font-semibold text-gray-900">$45,678</p>
-              <p className="text-sm text-purple-600">+8% from last month</p>
+              <h2 className="text-sm font-medium text-gray-600">Highest Run Scorer</h2>
+              <p className="text-2xl font-semibold text-gray-900">{statistics?.highestRunScorer.name || 'N/A'}</p>
+              <p className="text-sm text-purple-600">{statistics?.highestRunScorer.totalruns || 0} runs</p>
             </div>
           </div>
         </div>
@@ -73,9 +128,9 @@ export default function DashboardPage() {
               </svg>
             </div>
             <div className="ml-4">
-              <h2 className="text-sm font-medium text-gray-600">Active Matches</h2>
-              <p className="text-2xl font-semibold text-gray-900">24</p>
-              <p className="text-sm text-yellow-600">8 matches today</p>
+              <h2 className="text-sm font-medium text-gray-600">Highest Wicket Taker</h2>
+              <p className="text-2xl font-semibold text-gray-900">{statistics?.highestWicketTaker.name || 'N/A'}</p>
+              <p className="text-sm text-yellow-600">{statistics?.highestWicketTaker.wickets || 0} wickets</p>
             </div>
           </div>
         </div>

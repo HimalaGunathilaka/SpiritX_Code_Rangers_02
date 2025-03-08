@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+
 const PlayerSchema = new mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -49,3 +50,4 @@ const PlayerSchema = new mongoose.Schema({
 }, { timestamps: false, versionKey: false });
 
 export default mongoose.models.Player || mongoose.model('Player', PlayerSchema);
+

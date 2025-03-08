@@ -1,33 +1,31 @@
 'use client';
 import { useState } from 'react';
 
-interface PlayerStats {
-//   points: number;
-  batStrikeRate: number;
-  batAverage: number;
-  bowlStrikeRate: number;
-  economy: number;
-}
-
-export interface PlayerInfo {
-  id: number;
+interface PlayerInfo {
+  _id: string;
   name: string;
   university: string;
-  role: string;
-  price: number;
-  stats: PlayerStats;
+  category: string;
+  totalruns: number;
+  ballsfaced: number;
+  inningsplayed: number;
+  wickets: number;
+  overbowled: number;
+  runsconceded: number;
+  available: boolean;
 }
 
-interface PlayerCardProps {
-  player: PlayerInfo;
-  onAddToTeam?: (playerId: number) => void;
-}
-
-export default function PlayerCard({ player, onAddToTeam }: PlayerCardProps) {
+export default function PlayerCard({ player }: { player: PlayerInfo }) {
   const [showDetails, setShowDetails] = useState(false);
   
-  const getRoleColor = (role: string) => {
-    switch (role) {
+  // Calculate stats based on PlayerInfo data
+  const batStrikeRate = player.ballsfaced > 0 ? ((player.totalruns / player.ballsfaced) * 100).toFixed(2) : 0;
+  const batAverage = player.inningsplayed > 0 ? (player.totalruns / player.inningsplayed).toFixed(2) : 0;
+  const bowlStrikeRate = player.wickets > 0 ? ((player.overbowled * 6) / player.wickets).toFixed(2) : 0;
+  const economy = player.overbowled > 0 ? (player.runsconceded / player.overbowled).toFixed(2) : 0;
+
+  const getRoleColor = (category: string) => {
+    switch (category.toLowerCase()) {
       case 'batsman':
         return 'bg-blue-100 text-blue-800';
       case 'bowler':
@@ -54,8 +52,8 @@ export default function PlayerCard({ player, onAddToTeam }: PlayerCardProps) {
             <div>
               <div className="flex items-center">
                 <h3 className="font-medium">{player.name}</h3>
-                <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${getRoleColor(player.role)}`}>
-                  {player.role.charAt(0).toUpperCase() + player.role.slice(1)}
+                <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${getRoleColor(player.category)}`}>
+                  {player.category.charAt(0).toUpperCase() + player.category.slice(1)}
                 </span>
               </div>
               <p className="text-sm text-gray-500">{player.university}</p>
@@ -64,17 +62,17 @@ export default function PlayerCard({ player, onAddToTeam }: PlayerCardProps) {
 
           <div className="flex items-center mt-4 md:mt-0">
             <div className="grid grid-cols-3 gap-3 mr-4">
-              {/* <div className="text-center">
-                <p className="text-xs text-gray-500">Points</p>
-                <p className="font-medium">{player.stats.points}</p>
-              </div> */}
               <div className="text-center">
-                <p className="text-xs text-gray-500">Price</p>
-                <p className="font-medium">${player.price}</p>
+                <p className="text-xs text-gray-500">Total Runs</p>
+                <p className="font-medium">{player.totalruns}</p>
               </div>
               <div className="text-center">
-                <p className="text-xs text-gray-500">Bat Avg</p>
-                <p className="font-medium">{player.stats.batAverage}</p>
+                <p className="text-xs text-gray-500">Innings</p>
+                <p className="font-medium">{player.inningsplayed}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xs text-gray-500">Wickets</p>
+                <p className="font-medium">{player.wickets}</p>
               </div>
             </div>
             <button
@@ -89,41 +87,36 @@ export default function PlayerCard({ player, onAddToTeam }: PlayerCardProps) {
         {/* Expanded details section */}
         {showDetails && (
           <div className="mt-4 pt-4 border-t">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {/* <div className="p-3 bg-gray-50 rounded-md">
-                <p className="text-xs text-gray-500">Points</p>
-                <p className="font-medium text-lg">{player.stats.points}</p>
-              </div> */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="p-3 bg-gray-50 rounded-md">
                 <p className="text-xs text-gray-500">Bat Strike Rate</p>
-                <p className="font-medium text-lg">{player.stats.batStrikeRate}</p>
+                <p className="font-medium text-lg">{batStrikeRate}</p>
               </div>
               <div className="p-3 bg-gray-50 rounded-md">
                 <p className="text-xs text-gray-500">Batting Average</p>
-                <p className="font-medium text-lg">{player.stats.batAverage}</p>
+                <p className="font-medium text-lg">{batAverage}</p>
               </div>
               <div className="p-3 bg-gray-50 rounded-md">
                 <p className="text-xs text-gray-500">Bowl Strike Rate</p>
-                <p className="font-medium text-lg">{player.stats.bowlStrikeRate || '-'}</p>
+                <p className="font-medium text-lg">{bowlStrikeRate}</p>
               </div>
               <div className="p-3 bg-gray-50 rounded-md">
                 <p className="text-xs text-gray-500">Economy</p>
-                <p className="font-medium text-lg">{player.stats.economy || '-'}</p>
+                <p className="font-medium text-lg">{economy}</p>
               </div>
             </div>
             <div className="mt-4 flex justify-between">
               <a 
-                href={`/user/${player.id}`}
+                href={`/user/${player._id}`}
                 className="text-green-600 hover:text-green-800 text-sm font-medium"
               >
                 View Full Profile
               </a>
-              <button
-                onClick={() => onAddToTeam && onAddToTeam(player.id)}
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-              >
-                Add to Team
-              </button>
+              <div className="text-sm text-gray-500">
+                Status: <span className={player.available ? "text-green-600" : "text-red-600"}>
+                  {player.available ? "Available" : "Not Available"}
+                </span>
+              </div>
             </div>
           </div>
         )}
