@@ -1,0 +1,40 @@
+### Test GET request
+GET http://localhost:3000/api/player
+Accept: application/json
+
+###
+
+### Test POST request
+POST http://localhost:3000/api/player
+Content-Type: application/json
+
+{
+  "_id": "67cbc5535178249345daa9dc",
+  "name": "Chamika Chandimal adada ",
+  "university": "University of the Visual & Performing Arts",
+  "category": "Batsman",
+  "totalruns": 530,
+  "ballsfaced": 588,
+  "inningsplayed": 10,
+  "wickets": 0,
+  "overbowled": 3,
+  "runsconceded": 21
+}
+
+###
+
+### Test PATCH request
+PATCH http://localhost:3000/api/player
+Content-Type: application/json
+
+{
+  "playerId": "67cbc5535178249345daa9db",
+  "name": "Updated Chamika Chandimal",
+  "totalruns": 600
+}
+
+###
+
+### Test DELETE request
+DELETE http://localhost:3000/api/player?playerId=67cbc5535178249345daa9db
+Accept: application/json
