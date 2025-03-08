@@ -6,9 +6,11 @@ interface PlayerCardProps {
   value: number;
   category: string;
   selected: boolean;
+  onAdd: () => void;
+  onRemove: () => void;
 }
 
-export function PlayerCard({ name, university, value, category, selected }: PlayerCardProps) {
+export function PlayerCard({ name, university, value, category, selected, onAdd, onRemove }: PlayerCardProps) {
   return (
     <div className={`bg-white border rounded-lg ${selected ? "border-green-500 border-2" : "border-gray-200"}`}>
       <div className="p-4">
@@ -34,6 +36,7 @@ export function PlayerCard({ name, university, value, category, selected }: Play
             </div>
 
             <button
+              onClick={selected ? onRemove : onAdd}
               className={`mt-4 md:mt-0 md:ml-4 px-4 py-2 rounded-md ${
                 selected 
                   ? "border border-red-500 text-red-500 hover:bg-red-50" 
@@ -49,14 +52,16 @@ export function PlayerCard({ name, university, value, category, selected }: Play
   );
 }
 
+
 interface SelectedPlayerCardProps {
   name: string;
   university: string;
   type: string;
   price: number;
+  onRemove: () => void;
 }
 
-export function SelectedPlayerCard({ name, university, type, price }: SelectedPlayerCardProps) {
+export function SelectedPlayerCard({ name, university, type, price, onRemove }: SelectedPlayerCardProps) {
   return (
     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-md">
       <div className="flex items-center space-x-3">
@@ -72,6 +77,12 @@ export function SelectedPlayerCard({ name, university, type, price }: SelectedPl
         <span className="inline-block px-2 py-0.5 text-xs border border-gray-300 rounded-full mb-1">{type}</span>
         <p className="text-xs font-medium">${price}</p>
       </div>
+      <button
+        onClick={onRemove}
+        className="ml-4 px-2 py-1 text-xs text-red-500 border border-red-500 rounded-md hover:bg-red-50"
+      >
+        Remove
+      </button>
     </div>
   );
 }
