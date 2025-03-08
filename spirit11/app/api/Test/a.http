@@ -18,3 +18,12 @@ Content-Type: application/json
 ### Test DELETE request
 DELETE http://localhost:3000/api/test1?userId=1
 Accept: application/json
+
+
+### Test the POST request to the API route
+POST http://localhost:3000/api/bot
+Content-Type: application/json
+
+{
+  "text": "Explain how AI works"
+}
