@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { Search, Filter, ArrowLeft, ChevronDown, ChevronUp, User } from "lucide-react";
+import PlayerCard, { PlayerInfo } from '@/components/player-card';
+import { Search, Filter, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
 
 interface PlayerStats {
   points: number;
@@ -10,18 +11,9 @@ interface PlayerStats {
   economy: number;
 }
 
-interface Player {
-  id: number;
-  name: string;
-  university: string;
-  role: string;
-  price: number;
-  stats: PlayerStats;
-}
-
 export default function PlayerSearch() {
   // Mock data for players
-  const [players, setPlayers] = useState<Player[]>([
+  const [players, setPlayers] = useState<PlayerInfo[]>([
     {
       id: 1,
       name: "Amal Perera",
@@ -29,7 +21,6 @@ export default function PlayerSearch() {
       role: "batsman",
       price: 1500,
       stats: {
-        points: 420,
         batStrikeRate: 142.8,
         batAverage: 52.1,
         bowlStrikeRate: 0,
@@ -43,7 +34,6 @@ export default function PlayerSearch() {
       role: "batsman",
       price: 950,
       stats: {
-        points: 280,
         batStrikeRate: 125.3,
         batAverage: 38.7,
         bowlStrikeRate: 0,
@@ -57,7 +47,6 @@ export default function PlayerSearch() {
       role: "batsman",
       price: 1200,
       stats: {
-        points: 320,
         batStrikeRate: 138.5,
         batAverage: 45.2,
         bowlStrikeRate: 0,
@@ -71,7 +60,6 @@ export default function PlayerSearch() {
       role: "batsman",
       price: 800,
       stats: {
-        points: 210,
         batStrikeRate: 118.2,
         batAverage: 32.5,
         bowlStrikeRate: 0,
@@ -85,7 +73,6 @@ export default function PlayerSearch() {
       role: "bowler",
       price: 1100,
       stats: {
-        points: 290,
         batStrikeRate: 95.2,
         batAverage: 18.4,
         bowlStrikeRate: 22.3,
@@ -99,7 +86,6 @@ export default function PlayerSearch() {
       role: "bowler",
       price: 1300,
       stats: {
-        points: 350,
         batStrikeRate: 68.5,
         batAverage: 12.3,
         bowlStrikeRate: 19.1,
@@ -113,7 +99,6 @@ export default function PlayerSearch() {
       role: "bowler",
       price: 900,
       stats: {
-        points: 240,
         batStrikeRate: 65.2,
         batAverage: 15.7,
         bowlStrikeRate: 24.5,
@@ -127,7 +112,6 @@ export default function PlayerSearch() {
       role: "bowler",
       price: 850,
       stats: {
-        points: 230,
         batStrikeRate: 62.8,
         batAverage: 14.2,
         bowlStrikeRate: 25.6,
@@ -141,7 +125,6 @@ export default function PlayerSearch() {
       role: "all-rounder",
       price: 1250,
       stats: {
-        points: 330,
         batStrikeRate: 128.5,
         batAverage: 28.5,
         bowlStrikeRate: 27.2,
@@ -155,7 +138,6 @@ export default function PlayerSearch() {
       role: "all-rounder",
       price: 1150,
       stats: {
-        points: 310,
         batStrikeRate: 120.8,
         batAverage: 26.8,
         bowlStrikeRate: 28.4,
@@ -169,7 +151,6 @@ export default function PlayerSearch() {
       role: "wicket-keeper",
       price: 1050,
       stats: {
-        points: 310,
         batStrikeRate: 132.6,
         batAverage: 35.8,
         bowlStrikeRate: 0,
@@ -183,7 +164,6 @@ export default function PlayerSearch() {
       role: "wicket-keeper",
       price: 980,
       stats: {
-        points: 275,
         batStrikeRate: 128.5,
         batAverage: 32.4,
         bowlStrikeRate: 0,
@@ -235,10 +215,8 @@ export default function PlayerSearch() {
     } else if (sortBy === 'price') {
       valueA = a.price;
       valueB = b.price;
-    } else if (sortBy === 'points') {
-      valueA = a.stats.points;
-      valueB = b.stats.points;
-    } else if (sortBy === 'batAverage') {
+    } 
+    else if (sortBy === 'batAverage') {
       valueA = a.stats.batAverage;
       valueB = b.stats.batAverage;
     } else if (sortBy === 'economy') {
@@ -284,6 +262,12 @@ export default function PlayerSearch() {
     setSortBy(null);
     setCurrentPage(1);
     setIsFilterOpen(false);
+  };
+
+  const handleAddToTeam = (playerId: number) => {
+    // Handle adding player to team logic here
+    console.log(`Adding player ${playerId} to team`);
+    // You could implement a call to an API or update state
   };
 
   return (
@@ -435,6 +419,7 @@ export default function PlayerSearch() {
                 <PlayerCard
                   key={player.id}
                   player={player}
+                  onAddToTeam={handleAddToTeam}
                 />
               ))
             ) : (
@@ -497,116 +482,6 @@ export default function PlayerSearch() {
           )}
         </div>
       </main>
-    </div>
-  );
-}
-
-interface PlayerCardProps {
-  player: Player;
-}
-
-function PlayerCard({ player }: PlayerCardProps) {
-  const [showDetails, setShowDetails] = useState(false);
-  
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case 'batsman':
-        return 'bg-blue-100 text-blue-800';
-      case 'bowler':
-        return 'bg-green-100 text-green-800';
-      case 'all-rounder':
-        return 'bg-purple-100 text-purple-800';
-      case 'wicket-keeper':
-        return 'bg-yellow-100 text-yellow-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  return (
-    <div className="bg-white border rounded-lg">
-      <div className="p-4">
-        <div className="flex flex-col md:flex-row justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-              <User className="h-6 w-6 text-gray-500" />
-            </div>
-            <div>
-              <div className="flex items-center">
-                <h3 className="font-medium">{player.name}</h3>
-                <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${getRoleColor(player.role)}`}>
-                  {player.role.charAt(0).toUpperCase() + player.role.slice(1)}
-                </span>
-              </div>
-              <p className="text-sm text-gray-500">{player.university}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center mt-4 md:mt-0">
-            <div className="grid grid-cols-3 gap-3 mr-4">
-              <div className="text-center">
-                <p className="text-xs text-gray-500">Points</p>
-                <p className="font-medium">{player.stats.points}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-gray-500">Price</p>
-                <p className="font-medium">${player.price}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-gray-500">Bat Avg</p>
-                <p className="font-medium">{player.stats.batAverage}</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowDetails(!showDetails)}
-              className="px-4 py-2 border border-green-500 text-green-600 rounded-md hover:bg-green-50"
-            >
-              {showDetails ? 'Hide Details' : 'View Details'}
-            </button>
-          </div>
-        </div>
-        
-        {/* Expanded details section */}
-        {showDetails && (
-          <div className="mt-4 pt-4 border-t">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="p-3 bg-gray-50 rounded-md">
-                <p className="text-xs text-gray-500">Points</p>
-                <p className="font-medium text-lg">{player.stats.points}</p>
-              </div>
-              <div className="p-3 bg-gray-50 rounded-md">
-                <p className="text-xs text-gray-500">Bat Strike Rate</p>
-                <p className="font-medium text-lg">{player.stats.batStrikeRate}</p>
-              </div>
-              <div className="p-3 bg-gray-50 rounded-md">
-                <p className="text-xs text-gray-500">Batting Average</p>
-                <p className="font-medium text-lg">{player.stats.batAverage}</p>
-              </div>
-              <div className="p-3 bg-gray-50 rounded-md">
-                <p className="text-xs text-gray-500">Bowl Strike Rate</p>
-                <p className="font-medium text-lg">{player.stats.bowlStrikeRate || '-'}</p>
-              </div>
-              <div className="p-3 bg-gray-50 rounded-md">
-                <p className="text-xs text-gray-500">Economy</p>
-                <p className="font-medium text-lg">{player.stats.economy || '-'}</p>
-              </div>
-            </div>
-            <div className="mt-4 flex justify-between">
-              <a 
-                href={`/user/${player.id}`}
-                className="text-green-600 hover:text-green-800 text-sm font-medium"
-              >
-                View Full Profile
-              </a>
-              <button
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-              >
-                Add to Team
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

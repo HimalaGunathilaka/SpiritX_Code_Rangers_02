@@ -1,7 +1,49 @@
 'use client';
-import { Search, Filter, DollarSign, User, ArrowLeft, Info } from "lucide-react"
+import { useState } from 'react';
+import { DollarSign, ArrowLeft, Info, Search, Filter } from "lucide-react";
+import PlayerCard, { PlayerInfo } from '@/components/player-card';
 
 export default function CreateTeam() {
+  const [players, setPlayers] = useState<PlayerInfo[]>([
+    {
+      id: 1,
+      name: "Kasun Rajapaksa",
+      university: "University of Colombo",
+      role: "batsman",
+      price: 1200,
+      stats: {
+        batStrikeRate: 138.5,
+        batAverage: 45.2,
+        bowlStrikeRate: 0,
+        economy: 0,
+      }
+    },
+    {
+      id: 2,
+      name: "Dinesh Fernando",
+      university: "University of Peradeniya",
+      role: "batsman",
+      price: 950,
+      stats: {
+        batStrikeRate: 125.3,
+        batAverage: 38.7,
+        bowlStrikeRate: 0,
+        economy: 0,
+      }
+    },
+    // More players can be added here
+  ]);
+
+  const [selectedPlayers, setSelectedPlayers] = useState<number[]>([2]);
+
+  const handleAddToTeam = (playerId: number) => {
+    if (selectedPlayers.includes(playerId)) {
+      setSelectedPlayers(selectedPlayers.filter(id => id !== playerId));
+    } else {
+      setSelectedPlayers([...selectedPlayers, playerId]);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white border-b p-4 sticky top-0 z-10">
@@ -65,85 +107,13 @@ export default function CreateTeam() {
                 </div>
 
                 <div className="space-y-4">
-                  <PlayerCard
-                    name="Kasun Rajapaksa"
-                    university="University of Colombo"
-                    stats={{
-                      points: 320,
-                      batStrikeRate: 138.5,
-                      batAverage: 45.2,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={1200}
-                    selected={false}
-                  />
-                  <PlayerCard
-                    name="Dinesh Fernando"
-                    university="University of Peradeniya"
-                    stats={{
-                      points: 280,
-                      batStrikeRate: 125.3,
-                      batAverage: 38.7,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={950}
-                    selected={true}
-                  />
-                  <PlayerCard
-                    name="Amal Perera"
-                    university="University of Moratuwa"
-                    stats={{
-                      points: 420,
-                      batStrikeRate: 142.8,
-                      batAverage: 52.1,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={1500}
-                    selected={false}
-                  />
-                  <PlayerCard
-                    name="Sunil Bandara"
-                    university="University of Kelaniya"
-                    stats={{
-                      points: 210,
-                      batStrikeRate: 118.2,
-                      batAverage: 32.5,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={800}
-                    selected={false}
-                  />
-                  
-                  <PlayerCard
-                    name="Nuwan Silva"
-                    university="University of Colombo"
-                    stats={{
-                      points: 290,
-                      batStrikeRate: 95.2,
-                      batAverage: 18.4,
-                      bowlStrikeRate: 22.3,
-                      economy: 7.2,
-                    }}
-                    price={1100}
-                    selected={false}
-                  />
-                  <PlayerCard
-                    name="Lasith Kumara"
-                    university="University of Jaffna"
-                    stats={{
-                      points: 350,
-                      batStrikeRate: 68.5,
-                      batAverage: 12.3,
-                      bowlStrikeRate: 19.1,
-                      economy: 6.8,
-                    }}
-                    price={1300}
-                    selected={false}
-                  />
+                  {players.map(player => (
+                    <PlayerCard
+                      key={player.id}
+                      player={player}
+                      onAddToTeam={handleAddToTeam}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
@@ -246,81 +216,7 @@ export default function CreateTeam() {
         </div>
       </main>
     </div>
-  )
-}
-
-interface PlayerCardProps {
-  name: string;
-  university: string;
-  stats: {
-    points: number;
-    batStrikeRate: number;
-    batAverage: number;
-    bowlStrikeRate: number;
-    economy: number;
-  };
-  price: number;
-  selected: boolean;
-}
-
-function PlayerCard({ name, university, stats, price, selected }: PlayerCardProps) {
-  return (
-    <div className={`bg-white border rounded-lg ${selected ? "border-green-500 border-2" : "border-gray-200"}`}>
-      <div className="p-4">
-        <div className="flex flex-col md:flex-row justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-              <User className="h-6 w-6 text-gray-500" />
-            </div>
-            <div>
-              <h3 className="font-medium">{name}</h3>
-              <p className="text-sm text-gray-500">{university}</p>
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row items-center md:space-x-6 mt-4 md:mt-0">
-            <div className="grid grid-cols-5 gap-3 w-full md:w-auto">
-              <div className="text-center">
-                <p className="text-xs text-gray-500">Points</p>
-                <p className="font-medium">{stats.points}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-gray-500">Bat SR</p>
-                <p className="font-medium">{stats.batStrikeRate}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-gray-500">Bat Avg</p>
-                <p className="font-medium">{stats.batAverage}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-gray-500">Bowl SR</p>
-                <p className="font-medium">{stats.bowlStrikeRate || '-'}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-gray-500">Economy</p>
-                <p className="font-medium">{stats.economy || '-'}</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center mt-4 md:mt-0 md:ml-4">
-              <p className="text-xs text-gray-500">Price</p>
-              <p className="font-medium">${price}</p>
-            </div>
-
-            <button
-              className={`mt-4 md:mt-0 md:ml-4 px-4 py-2 rounded-md ${
-                selected 
-                  ? "border border-red-500 text-red-500 hover:bg-red-50" 
-                  : "bg-green-600 text-white hover:bg-green-700"
-              }`}
-            >
-              {selected ? "Remove" : "Add"}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+  );
 }
 
 interface SelectedPlayerCardProps {
@@ -335,7 +231,9 @@ function SelectedPlayerCard({ name, university, type, price }: SelectedPlayerCar
     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-md">
       <div className="flex items-center space-x-3">
         <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-          <User className="h-4 w-4 text-gray-500" />
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
         </div>
         <div>
           <p className="font-medium text-sm">{name}</p>
