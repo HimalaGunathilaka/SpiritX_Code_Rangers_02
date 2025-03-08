@@ -1,177 +1,15 @@
 'use client';
-import { useState } from 'react';
+import { JSX, useState, useEffect } from 'react';
 import PlayerCard, { PlayerInfo } from '@/components/player-card';
 import { Search, Filter, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
 
-interface PlayerStats {
-  points: number;
-  batStrikeRate: number;
-  batAverage: number;
-  bowlStrikeRate: number;
-  economy: number;
-}
+
 
 export default function PlayerSearch() {
   // Mock data for players
-  const [players, setPlayers] = useState<PlayerInfo[]>([
-    {
-      id: 1,
-      name: "Amal Perera",
-      university: "University of Moratuwa",
-      role: "batsman",
-      price: 1500,
-      stats: {
-        batStrikeRate: 142.8,
-        batAverage: 52.1,
-        bowlStrikeRate: 0,
-        economy: 0,
-      }
-    },
-    {
-      id: 2,
-      name: "Dinesh Fernando",
-      university: "University of Peradeniya",
-      role: "batsman",
-      price: 950,
-      stats: {
-        batStrikeRate: 125.3,
-        batAverage: 38.7,
-        bowlStrikeRate: 0,
-        economy: 0,
-      }
-    },
-    {
-      id: 3,
-      name: "Kasun Rajapaksa",
-      university: "University of Colombo",
-      role: "batsman",
-      price: 1200,
-      stats: {
-        batStrikeRate: 138.5,
-        batAverage: 45.2,
-        bowlStrikeRate: 0,
-        economy: 0,
-      }
-    },
-    {
-      id: 4,
-      name: "Sunil Bandara",
-      university: "University of Kelaniya",
-      role: "batsman",
-      price: 800,
-      stats: {
-        batStrikeRate: 118.2,
-        batAverage: 32.5,
-        bowlStrikeRate: 0,
-        economy: 0,
-      }
-    },
-    {
-      id: 5,
-      name: "Nuwan Silva",
-      university: "University of Colombo",
-      role: "bowler",
-      price: 1100,
-      stats: {
-        batStrikeRate: 95.2,
-        batAverage: 18.4,
-        bowlStrikeRate: 22.3,
-        economy: 7.2,
-      }
-    },
-    {
-      id: 6,
-      name: "Lasith Kumara",
-      university: "University of Jaffna",
-      role: "bowler",
-      price: 1300,
-      stats: {
-        batStrikeRate: 68.5,
-        batAverage: 12.3,
-        bowlStrikeRate: 19.1,
-        economy: 6.8,
-      }
-    },
-    {
-      id: 7,
-      name: "Pradeep Jayawardena",
-      university: "University of Ruhuna",
-      role: "bowler",
-      price: 900,
-      stats: {
-        batStrikeRate: 65.2,
-        batAverage: 15.7,
-        bowlStrikeRate: 24.5,
-        economy: 7.5,
-      }
-    },
-    {
-      id: 8,
-      name: "Tharindu Mendis",
-      university: "University of Sri Jayewardenepura",
-      role: "bowler",
-      price: 850,
-      stats: {
-        batStrikeRate: 62.8,
-        batAverage: 14.2,
-        bowlStrikeRate: 25.6,
-        economy: 7.8,
-      }
-    },
-    {
-      id: 9,
-      name: "Chamara Jayasuriya",
-      university: "University of Ruhuna",
-      role: "all-rounder",
-      price: 1250,
-      stats: {
-        batStrikeRate: 128.5,
-        batAverage: 28.5,
-        bowlStrikeRate: 27.2,
-        economy: 8.1,
-      }
-    },
-    {
-      id: 10,
-      name: "Roshan Peiris",
-      university: "University of Kelaniya",
-      role: "all-rounder",
-      price: 1150,
-      stats: {
-        batStrikeRate: 120.8,
-        batAverage: 26.8,
-        bowlStrikeRate: 28.4,
-        economy: 8.3,
-      }
-    },
-    {
-      id: 11,
-      name: "Kusal Mendis",
-      university: "University of Sri Jayewardenepura",
-      role: "wicket-keeper",
-      price: 1050,
-      stats: {
-        batStrikeRate: 132.6,
-        batAverage: 35.8,
-        bowlStrikeRate: 0,
-        economy: 0,
-      }
-    },
-    {
-      id: 12,
-      name: "Sahan Perera",
-      university: "University of Moratuwa",
-      role: "wicket-keeper",
-      price: 980,
-      stats: {
-        batStrikeRate: 128.5,
-        batAverage: 32.4,
-        bowlStrikeRate: 0,
-        economy: 0,
-      }
-    }
-  ]);
-
+  const [players, setPlayers] = useState<PlayerInfo[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState<string | null>(null);
   const [filterUniversity, setFilterUniversity] = useState<string | null>(null);
@@ -182,6 +20,26 @@ export default function PlayerSearch() {
   
   const playersPerPage = 5;
 
+  useEffect(() => {
+    async function fetchPlayers() {
+      try {
+        const response = await fetch('http://localhost:3000/api/player', {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await response.json();
+        setPlayers(data);
+      } catch (error) {
+        console.error('Error fetching players:', error);
+      }
+    }
+
+    fetchPlayers();
+  }, []);
+useEffect(() => {
+  console.log(players);
+}, [players]);
   // Get unique universities for filter dropdown
   const universities = [...new Set(players.map(player => player.university))];
   
@@ -419,7 +277,6 @@ export default function PlayerSearch() {
                 <PlayerCard
                   key={player.id}
                   player={player}
-                  onAddToTeam={handleAddToTeam}
                 />
               ))
             ) : (
@@ -485,3 +342,4 @@ export default function PlayerSearch() {
     </div>
   );
 }
+

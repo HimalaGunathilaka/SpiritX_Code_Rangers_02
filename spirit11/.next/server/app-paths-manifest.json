@@ -1,18 +1,11 @@
 {
-  "/(pages)/(user)/chatbot/page": "app/(pages)/(user)/chatbot/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/(pages)/(user)/[member]/page": "app/(pages)/(user)/[member]/page.js",
-  "/(pages)/bot/page": "app/(pages)/bot/page.js",
-  "/(pages)/(user)/homepage/page": "app/(pages)/(user)/homepage/page.js",
   "/(pages)/(user)/create-team/page": "app/(pages)/(user)/create-team/page.js",
-  "/(pages)/(user)/leaderboard/page": "app/(pages)/(user)/leaderboard/page.js",
-  "/(pages)/test/page": "app/(pages)/test/page.js",
-  "/(pages)/(user)/team/page": "app/(pages)/(user)/team/page.js",
-  "/page": "app/page.js",
-  "/(pages)/(user)/member/page": "app/(pages)/(user)/member/page.js",
-  "/(pages)/(user)/player/page": "app/(pages)/(user)/player/page.js",
-  "/(pages)/(user)/players/page": "app/(pages)/(user)/players/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/playerstatus/route": "app/api/playerstatus/route.js",
   "/(pages)/(user)/user/page": "app/(pages)/(user)/user/page.js",
-  "/(pages)/user/page": "app/(pages)/user/page.js"
+  "/(pages)/(user)/leaderboard/page": "app/(pages)/(user)/leaderboard/page.js",
+  "/(pages)/(user)/team/page": "app/(pages)/(user)/team/page.js",
+  "/(pages)/(user)/players/page": "app/(pages)/(user)/players/page.js",
+  "/api/player/route": "app/api/player/route.js",
+  "/_not-found/page": "app/_not-found/page.js"
 }
