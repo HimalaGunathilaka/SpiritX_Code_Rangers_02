@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link"
 
 export default function Home() {
@@ -31,7 +32,7 @@ export default function Home() {
                   Tournaments
                 </Link>
                 <Link
-                  href="/leaderboard"
+                  href="#"
                   className="border-transparent text-gray-500 hover:border-green-500 hover:text-green-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Leaderboard
@@ -88,19 +89,19 @@ export default function Home() {
                 <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                   <div className="rounded-md shadow">
                     <Link
-                      href="./create-team"
+                      href="/create-team"
                       className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-green-700 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
                     >
                       Get Started
                     </Link>
                   </div>
                   <div className="mt-3 sm:mt-0 sm:ml-3">
-                    {/* <Link
+                    <Link
                       href="#"
                       className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-500 bg-opacity-60 hover:bg-opacity-70 md:py-4 md:text-lg md:px-10"
                     >
                       Learn More
-                    </Link> */}
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -213,22 +214,22 @@ export default function Home() {
               </div>
 
               <div className="relative">
-                <button className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white hover:bg-green-600 focus:outline-none">
+                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white">
                   <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                  <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-                  />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                    />
                   </svg>
-                </button>
+                </div>
                 <div className="ml-16">
                   <h3 className="text-lg leading-6 font-medium text-gray-900">AI Assistance</h3>
                   <p className="mt-2 text-base text-gray-500">
