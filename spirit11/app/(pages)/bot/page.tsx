@@ -3,49 +3,43 @@
 import React, { useState } from 'react';
 
 interface Message {
-  role: 'user' | 'bot';
-  content: string;
+    role: 'user' | 'bot';
+    content: string;
 }
 
 export default function ChatbotPage() {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'bot',
-      content: 'Hello! I\'m Spiriter, your fantasy cricket AI assistant. How can I help you today with your team?'
-    }
-  ]);
+    const [input, setInput] = useState('');
+    const [messages, setMessages] = useState<Message[]>([
+        {
+            role: 'bot',
+            content: 'Hello! I\'m Spiriter, your fantasy cricket AI assistant. How can I help you today with your team?'
+        }
+    ]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+    const handleSend = async () => {
+        if (!input.trim()) return;
 
-    // Add user message
-    setMessages([...messages, { role: 'user', content: input }]);
+        // Add user message
+        setMessages([...messages, { role: 'user', content: input }]);
+        console.log(input);
+        // Send request to the bot API
+        const response = await fetch('http://localhost:3000/api/bot', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text: input })
+        });
 
-    // Simulate bot response
-    setTimeout(() => {
-      let response = '';
-      
-      if (input.toLowerCase().includes('batsman')) {
-        response = 'Based on current form, Amal Perera from University of Moratuwa is showing exceptional batting performance with a strike rate of 142.8 and average of 52.1. He would be an excellent addition to your team.';
-      } else if (input.toLowerCase().includes('bowler')) {
-        response = 'For bowlers, consider selecting Lasith Kumara from University of Jaffna. He has a bowling strike rate of 19.1 and economy of 6.8, making him one of the most effective bowlers in the tournament.';
-      } else if (input.toLowerCase().includes('captain')) {
-        response = 'For captain selection, choose an all-rounder who gets opportunities in both batting and bowling. Nuwan Silva from University of Colombo would be a good choice with consistent performances in recent matches.';
-      } else if (input.toLowerCase().includes('budget')) {
-        response = 'To optimize your budget, invest around 60% on key players (3-4 star performers), 30% on good support players, and keep 10% as a buffer for last-minute adjustments before a match.';
-      } else if (input.toLowerCase().includes('strategy') || input.toLowerCase().includes('win')) {
-        response = 'The winning strategy is to pick players featuring in the upcoming matches, focus on all-rounders for maximum points, and analyze pitch conditions to determine if it favors batsmen or bowlers.';
-      } else {
-        response = 'Thank you for your question. Based on the latest university matches data, I would recommend focusing on players who have consistent performance across multiple games rather than those with occasional high scores.';
-      }
-      
-      setMessages(prevMessages => [...prevMessages, { role: 'bot', content: response }]);
-    }, 1000);
+        const data = await response.json();
+        console.log(data);
 
-    // Clear input
-    setInput('');
-  };
+        // Add bot response
+        setMessages(prevMessages => [...prevMessages, { role: 'bot', content: data.response }]);
+
+        // Clear input
+        setInput('');
+    };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -59,6 +53,8 @@ export default function ChatbotPage() {
                 </svg>
                 </button>
               <h1 className="text-xl font-bold">Spiriter AI Assistant</h1>
+              </button>
+              <h1 className="text-xl font-bold text-black">Spiriter AI Assistant</h1>
             </div>
           </div>
         </div>
@@ -70,8 +66,8 @@ export default function ChatbotPage() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow h-[calc(100vh-12rem)] flex flex-col">
               <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold">Chat with Spiriter</h2>
-                <p className="text-sm text-gray-500">Get personalized advice for your fantasy cricket team</p>
+                <h2 className="text-lg font-bold text-black">Chat with Spiriter</h2>
+                <p className="text-sm text-gray-700">Get personalized advice for your fantasy cricket team</p>
               </div>
               <div className="flex flex-col h-[calc(100%-5rem)] p-4">
                 <div className="flex-1 overflow-y-auto mb-4 space-y-4">
@@ -228,4 +224,3 @@ export default function ChatbotPage() {
     </div>
   );
 }
-
