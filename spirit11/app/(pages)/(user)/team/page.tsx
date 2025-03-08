@@ -64,7 +64,55 @@ export default function Team() {
     }
     fetchTeam();
   }, []);
+ 
 
+  const handleRemovePlayers = async () => {
+    // Calculate the remaining budget after removing players
+    const remainingBudget = team.players
+      .filter(player => deletedPlayers.includes(player.id))
+      .reduce((sum, player) => sum + player.price, 0);
+    const response = await fetch('http://localhost:3000/api/user', {
+      method: 'PATCH',
+      headers: {
+      'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+      userId: '67cc39310e8e5d2de616a75a',
+      playerIds: deletedPlayers,
+      budget: remainingBudget
+      })
+    });
+
+    
+    const data = await response.json();
+    setDeletedPlayers([]);
+    // Update team state if needed based on response
+  };
+
+const handlereset = async () => {
+  const response = await fetch('http://localhost:3000/api/user?id=67cc39310e8e5d2de616a75a', {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  const data = await response.json();
+  const players = data.team.map((player: any, index: number) => ({
+    id: player._id,
+    name: player.name,
+    role: player.category.toLowerCase(),
+    team: player.university,
+    price: parseFloat(player.value),
+    stats: `Runs: ${player.totalruns}, Wickets: ${player.wickets}`
+  }));
+  setTeam({
+    name: "Cricket Titans",
+    points: 0,
+    rank: 42,
+    captain: players[0],
+    viceCaptain: players[1],
+    players: players
+  });
+};
   // Group players by role
   const batsmen = team.players.filter(player => player.role === "batsman");
   const bowlers = team.players.filter(player => player.role === "bowler");
@@ -136,6 +184,7 @@ export default function Team() {
             </div>
           </div>
         </div>
+        
 
         {/* Main content */}
         <div className="md:pl-64 flex flex-col flex-1">
@@ -219,6 +268,28 @@ export default function Team() {
               <div className="mt-8">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg leading-6 font-medium text-gray-900">Team Players</h2>
+                  <div className="flex space-x-2">
+                  <button
+                    type="button"
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    onClick={() => {
+                    // Save team logic here'
+                    handleRemovePlayers();
+                    }}
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                    onClick={() => {
+                    // Reset team logic here
+                    handlereset();
+                    }}
+                  >
+                    Reset
+                  </button>
+                  </div>
                 </div>
                 <div className="mt-2 overflow-hidden shadow sm:rounded-md">
                   <ul className="divide-y divide-gray-200 bg-white">
@@ -262,15 +333,18 @@ export default function Team() {
                           <span className="text-sm font-medium text-gray-900 mr-2">
                             Rs.{player.price.toLocaleString()}
                           </span>
-                          <button
+                            <button
                             className="px-2 py-1 text-white bg-red-700 hover:bg-red-500 rounded"
-                            onClick={() => setTeam(prevTeam => ({
-                            ...prevTeam,
-                            players: prevTeam.players.filter(p => p.id !== player.id)
-                            }))}
-                          >
+                            onClick={() => {
+                              setTeam(prevTeam => ({
+                              ...prevTeam,
+                              players: prevTeam.players.filter(p => p.id !== player.id)
+                              }));
+                              setDeletedPlayers(prevDeleted => [...prevDeleted, player.id]);
+                            }}
+                            >
                             Remove
-                          </button>
+                            </button>
                           </div>
                         </div>
                         <div className="mt-2 text-sm text-gray-500">
