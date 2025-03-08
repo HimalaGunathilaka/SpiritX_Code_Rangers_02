@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface Player {
   id: number;
@@ -26,116 +27,43 @@ export default function Team() {
   
   // Mock data for team
   const [team, setTeam] = useState<Team>({
-    name: "Cricket Titans",
+    name: "",
     points: 0,
-    rank: 42,
-    captain: {
-      id: 1,
-      name: "Amal Perera",
-      role: "batsman",
-      team: "University of Moratuwa",
-      price: 1500000,
-      stats: "Avg: 52.1, SR: 142.8"
-    },
-    viceCaptain: {
-      id: 5,
-      name: "Nuwan Silva",
-      role: "bowler",
-      team: "University of Colombo",
-      price: 1100000,
-      stats: "Wickets: 18, Economy: 7.2"
-    },
-    players: [
-      {
-        id: 1,
-        name: "Amal Perera",
-        role: "batsman",
-        team: "University of Moratuwa",
-        price: 1500000,
-        stats: "Avg: 52.1, SR: 142.8"
-      },
-      {
-        id: 2,
-        name: "Dinesh Fernando",
-        role: "batsman",
-        team: "University of Peradeniya",
-        price: 950000,
-        stats: "Avg: 38.7, SR: 125.3"
-      },
-      {
-        id: 3,
-        name: "Kasun Rajapaksa",
-        role: "batsman",
-        team: "University of Colombo",
-        price: 1200000,
-        stats: "Avg: 45.2, SR: 138.5"
-      },
-      {
-        id: 4,
-        name: "Sunil Bandara",
-        role: "batsman",
-        team: "University of Kelaniya",
-        price: 800000,
-        stats: "Avg: 32.5, SR: 118.2"
-      },
-      {
-        id: 5,
-        name: "Nuwan Silva",
-        role: "bowler",
-        team: "University of Colombo",
-        price: 1100000,
-        stats: "Wickets: 18, Economy: 7.2"
-      },
-      {
-        id: 6,
-        name: "Lasith Kumara",
-        role: "bowler",
-        team: "University of Jaffna",
-        price: 1300000,
-        stats: "Wickets: 22, Economy: 6.8"
-      },
-      {
-        id: 7,
-        name: "Pradeep Jayawardena",
-        role: "bowler",
-        team: "University of Ruhuna",
-        price: 900000,
-        stats: "Wickets: 15, Economy: 7.5"
-      },
-      {
-        id: 8,
-        name: "Tharindu Mendis",
-        role: "bowler",
-        team: "University of Sri Jayewardenepura",
-        price: 850000,
-        stats: "Wickets: 14, Economy: 7.8"
-      },
-      {
-        id: 9,
-        name: "Chamara Jayasuriya",
-        role: "all-rounder",
-        team: "University of Ruhuna",
-        price: 1250000,
-        stats: "Avg: 28.5, Wickets: 15"
-      },
-      {
-        id: 10,
-        name: "Roshan Peiris",
-        role: "all-rounder",
-        team: "University of Kelaniya",
-        price: 1150000,
-        stats: "Avg: 26.8, Wickets: 12"
-      },
-      {
-        id: 11,
-        name: "Kusal Mendis",
-        role: "wicket-keeper",
-        team: "University of Sri Jayewardenepura",
-        price: 1050000,
-        stats: "Avg: 35.8, Dismissals: 24"
-      }
-    ]
+    rank: 0,
+    captain: { id: 0, name: "", role: "", team: "", price: 0, stats: "" },
+    viceCaptain: { id: 0, name: "", role: "", team: "", price: 0, stats: "" },
+    players: []
   });
+
+  const [deletedPlayers, setDeletedPlayers] = useState<number[]>([]);
+
+  useEffect(() => {
+    async function fetchTeam() {
+      const response = await fetch('http://localhost:3000/api/user?id=67cc39310e8e5d2de616a75a', {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      const players = data.team.map((player: any, index: number) => ({
+        id: player._id,
+        name: player.name,
+        role: player.category.toLowerCase(),
+        team: player.university,
+        price: parseFloat(player.value),
+        stats: `Runs: ${player.totalruns}, Wickets: ${player.wickets}`
+      }));
+      setTeam({
+        name: "Cricket Titans",
+        points: 0,
+        rank: 42,
+        captain: players[0],
+        viceCaptain: players[1],
+        players: players
+      });
+    }
+    fetchTeam();
+  }, []);
 
   // Group players by role
   const batsmen = team.players.filter(player => player.role === "batsman");
@@ -398,3 +326,4 @@ function PlayerBubble({ player, isCaptain, isViceCaptain }: PlayerBubbleProps) {
     </div>
   );
 }
+

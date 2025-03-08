@@ -3,20 +3,70 @@ import mongoose from "mongoose";
 import connectMongo from "@/lib/dbconfig";
 import User from "@/models/user";
 import Player from "@/models/player";
+import { calculatePlayerPoints } from "@/lib/utils";
 
-  // GET all users
-  export const GET = async () => {
-    try {
-      await connectMongo();
-      const users = await User.find();
-      return new NextResponse(JSON.stringify(users), { status: 200 });
-    } catch (error: any) {
-      return new NextResponse("Error in fetching players: " + error.message, {
-        status: 500,
-      });
+export const GET = async (request: Request) => {
+  try {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('id');
+
+    await connectMongo();
+
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return new NextResponse("Invalid User ID", { status: 400 });
     }
-  };
 
+    const user = await User.findById(userId).populate('team');
+
+    if (!user) {
+      return new NextResponse("User not found", { status: 404 });
+    }
+
+    const playerData = user.team.map((player: any) => {
+      const stats = {
+        totalRuns: player.totalruns,
+        ballsFaced: player.ballsfaced,
+        inningsPlayed: player.inningsplayed,
+        totalWickets: player.wickets,
+        ballsBowled: player.overbowled,
+        runsConceded: player.runsconceded,
+      };
+      const value = calculatePlayerPoints(stats).toFixed(2);
+      return {
+        _id: player._id,
+        name: player.name,
+        university: player.university,
+        value: value,
+        category: player.category,
+        totalruns: player.totalruns,
+        ballsfaced: player.ballsfaced,
+        inningsplayed: player.inningsplayed,
+        wickets: player.wickets,
+        overbowled: player.overbowled,
+        runsconceded: player.runsconceded,
+        available: player.available,
+      };
+    });
+
+    const userData = {
+      _id: user._id,
+      name: user.name,
+      password: user.password,
+      team: playerData,
+      budget: user.budget,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      points: user.points,
+      teamname: user.teamname,
+    };
+
+    return new NextResponse(JSON.stringify(userData), { status: 200 });
+  } catch (error: any) {
+    return new NextResponse("Error in fetching user information: " + error.message, {
+      status: 500,
+    });
+  }
+};
 
 // POST to create a new user
 export const POST = async (request: Request) => {
