@@ -6,5 +6,7 @@
   "/(pages)/bot/page": "app/(pages)/bot/page.js",
   "/(pages)/(user)/homepage/page": "app/(pages)/(user)/homepage/page.js",
   "/(pages)/(user)/create-team/page": "app/(pages)/(user)/create-team/page.js",
-  "/(pages)/(user)/leaderboard/page": "app/(pages)/(user)/leaderboard/page.js"
+  "/(pages)/(user)/leaderboard/page": "app/(pages)/(user)/leaderboard/page.js",
+  "/(pages)/test/page": "app/(pages)/test/page.js",
+  "/(pages)/(user)/team/page": "app/(pages)/(user)/team/page.js"
 }
