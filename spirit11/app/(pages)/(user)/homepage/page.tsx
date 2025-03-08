@@ -31,7 +31,7 @@ export default function Home() {
                   Tournaments
                 </Link>
                 <Link
-                  href="#"
+                  href="/leaderboard"
                   className="border-transparent text-gray-500 hover:border-green-500 hover:text-green-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Leaderboard
@@ -95,12 +95,12 @@ export default function Home() {
                     </Link>
                   </div>
                   <div className="mt-3 sm:mt-0 sm:ml-3">
-                    <Link
+                    {/* <Link
                       href="#"
                       className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-500 bg-opacity-60 hover:bg-opacity-70 md:py-4 md:text-lg md:px-10"
                     >
                       Learn More
-                    </Link>
+                    </Link> */}
                   </div>
                 </div>
               </div>
