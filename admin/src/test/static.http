@@ -1,0 +1,14 @@
+### Test Statistics API
+GET http://localhost:3000/api/statistics
+Content-Type: application/json
+
+### Test with specific headers
+GET http://localhost:3000/api/statistics
+Accept: application/json
+Content-Type: application/json
+
+### Test with error handling
+GET http://localhost:3000/api/statistics
+Accept: application/json
+Content-Type: application/json
+X-Test-Error: true
