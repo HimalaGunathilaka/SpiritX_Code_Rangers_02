@@ -4,7 +4,18 @@ import connectMongo from "@/lib/dbconfig";
 import User from "@/models/user";
 import Player from "@/models/player";
 
-
+  // GET all users
+  export const GET = async () => {
+    try {
+      await connectMongo();
+      const users = await User.find();
+      return new NextResponse(JSON.stringify(users), { status: 200 });
+    } catch (error: any) {
+      return new NextResponse("Error in fetching players: " + error.message, {
+        status: 500,
+      });
+    }
+  };
 
 // POST to create a new user
 export const POST = async (request: Request) => {

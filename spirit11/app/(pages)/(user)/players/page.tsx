@@ -1,7 +1,21 @@
 'use client';
 import { JSX, useState, useEffect } from 'react';
-import PlayerCard, { PlayerInfo } from '@/components/player-card';
+import PlayerCard from '@/components/player-card';
 import { Search, Filter, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
+
+interface PlayerInfo {
+  _id: number;
+  name: string;
+  university: string;
+  role: string;
+  price: number;
+  category: string;
+  totalruns: number;
+  ballsfaced: number;
+  inningsplayed: number;
+  wickets: number;
+  matches: number;
+}
 
 
 
@@ -23,7 +37,7 @@ export default function PlayerSearch() {
   useEffect(() => {
     async function fetchPlayers() {
       try {
-        const response = await fetch('http://localhost:3000/api/player', {
+        const response = await fetch('api/player', {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -37,9 +51,11 @@ export default function PlayerSearch() {
 
     fetchPlayers();
   }, []);
-useEffect(() => {
-  console.log(players);
-}, [players]);
+
+// useEffect(() => {
+//   console.log(players);
+// }, [players]);
+
   // Get unique universities for filter dropdown
   const universities = [...new Set(players.map(player => player.university))];
   
@@ -74,13 +90,13 @@ useEffect(() => {
       valueA = a.price;
       valueB = b.price;
     } 
-    else if (sortBy === 'batAverage') {
-      valueA = a.stats.batAverage;
-      valueB = b.stats.batAverage;
-    } else if (sortBy === 'economy') {
+    else if (sortBy === 'name') {
+      valueA = a.name;
+      valueB = b.name;
+    } else if (sortBy === 'price') {
       // For players without economy (like batsmen), use a high value for sorting
-      valueA = a.stats.economy || 999;
-      valueB = b.stats.economy || 999;
+      valueA = a.price || 999;
+      valueB = b.price || 999;
     } else {
       return 0;
     }
@@ -165,13 +181,13 @@ useEffect(() => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
-            <button 
+            {/* <button 
               className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
               onClick={() => setIsFilterOpen(!isFilterOpen)}
             >
               <Filter className="h-4 w-4 mr-2" />
-              Filters
-            </button>
+              Filterssdfghj
+            </button> */}
           </div>
           
           {/* Advanced Filters */}
@@ -275,7 +291,6 @@ useEffect(() => {
             {currentPlayers.length > 0 ? (
               currentPlayers.map(player => (
                 <PlayerCard
-                  key={player.id}
                   player={player}
                 />
               ))
