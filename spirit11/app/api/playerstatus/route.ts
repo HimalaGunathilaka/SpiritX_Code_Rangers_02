@@ -9,7 +9,7 @@ export const GET = async () => {
   try {
     await connectMongo();
     const players = await Player.find({ available: true });
-
+    // console.log("xxxxxxx")
     const playerData = players.map((player: any) => {
       const stats = {
         totalRuns: player.totalruns,
@@ -21,13 +21,14 @@ export const GET = async () => {
       };
       const value = calculatePlayerPoints(stats).toFixed(2);
       return {
+        _id: player._id,
         name: player.name,
         university: player.university,
         value: value,
         category: player.category,
       };
     });
-
+    // console.log("Player Data:", playerData);
     return new NextResponse(JSON.stringify(playerData), { status: 200 });
   } catch (error: any) {
     return new NextResponse("Error in fetching available players: " + error.message, {
