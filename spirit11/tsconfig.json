@@ -25,6 +25,6 @@
       "@/models/*": ["models/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/(pages)/(user)/[member]"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/(pages)/(user)/player/[member]"],
   "exclude": ["node_modules"]
 }
