@@ -1,0 +1,18 @@
+### Get all available players
+GET http://localhost:3000/api/playerstatus
+Content-Type: application/json
+
+###
+
+### Set availability of a player by _id
+PATCH http://localhost:3000/api/playerstatus
+Content-Type: application/json
+
+{
+  "_id": "67cbc5535178249345daa9db",  
+  "available": true
+}
+
+### Get all available players
+GET http://localhost:3000/api/playerdetails
+Content-Type: application/json
