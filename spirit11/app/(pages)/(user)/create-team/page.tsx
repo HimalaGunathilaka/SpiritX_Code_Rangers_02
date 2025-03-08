@@ -1,8 +1,62 @@
 'use client';
-import { Search, Filter, DollarSign, User, ArrowLeft, Info } from "lucide-react"
-import { PlayerCard ,SelectedPlayerCard} from "./components"
+import { Search, Filter, DollarSign, ArrowLeft, Info } from "lucide-react";
+import { PlayerCard, SelectedPlayerCard } from "./components";
+import { useEffect, useState } from 'react';
 
 export default function CreateTeam() {
+  // fetch available players
+  interface Player {
+    _id: string;
+    name: string;
+    university: string;
+    value: number;
+    category: string;
+  }
+
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const playersPerPage = 10;
+
+  useEffect(() => {
+    async function fetchPlayers() {
+      try {
+        const response = await fetch('http://localhost:3000/api/playerstatus', {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await response.json();
+        setPlayers(data);
+      } catch (error) {
+        console.error('Error fetching players:', error);
+      }
+    }
+
+    fetchPlayers();
+  }, []);
+
+  const filteredPlayers = players.filter(player => {
+    if (selectedCategory === 'All') {
+      return true;
+    } else if (selectedCategory === 'Batsmen') {
+      return player.category === 'Batsman';
+    } else if (selectedCategory === 'Bowlers') {
+      return player.category === 'Bowler';
+    } else if (selectedCategory === 'All-Rounders') {
+      return player.category === 'All-Rounder';
+    }
+    return false;
+  });
+
+  const indexOfLastPlayer = currentPage * playersPerPage;
+  const indexOfFirstPlayer = indexOfLastPlayer - playersPerPage;
+  const currentPlayers = filteredPlayers.slice(indexOfFirstPlayer, indexOfLastPlayer);
+
+  const handleLoadMore = () => {
+    setCurrentPage(prevPage => prevPage + 1);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white border-b p-4 sticky top-0 z-10">
@@ -51,101 +105,66 @@ export default function CreateTeam() {
 
               <div>
                 <div className="flex border-b mb-6">
-                  <button className="py-2 px-4 text-center focus:outline-none border-b-2 border-green-500 text-green-700 font-medium">
+                  <button
+                    className={`py-2 px-4 text-center focus:outline-none border-b-2 ${selectedCategory === 'All' ? 'border-green-500 text-green-700 font-medium' : 'border-transparent hover:text-green-700'}`}
+                    onClick={() => {
+                      setSelectedCategory('All');
+                      setCurrentPage(1);
+                    }}
+                  >
+                    All
+                  </button>
+                  <button
+                    className={`py-2 px-4 text-center focus:outline-none border-b-2 ${selectedCategory === 'Batsmen' ? 'border-green-500 text-green-700 font-medium' : 'border-transparent hover:text-green-700'}`}
+                    onClick={() => {
+                      setSelectedCategory('Batsmen');
+                      setCurrentPage(1);
+                    }}
+                  >
                     Batsmen
                   </button>
-                  <button className="py-2 px-4 text-center focus:outline-none border-b-2 border-transparent hover:text-green-700">
+                  <button
+                    className={`py-2 px-4 text-center focus:outline-none border-b-2 ${selectedCategory === 'Bowlers' ? 'border-green-500 text-green-700 font-medium' : 'border-transparent hover:text-green-700'}`}
+                    onClick={() => {
+                      setSelectedCategory('Bowlers');
+                      setCurrentPage(1);
+                    }}
+                  >
                     Bowlers
                   </button>
-                  <button className="py-2 px-4 text-center focus:outline-none border-b-2 border-transparent hover:text-green-700">
+                  <button
+                    className={`py-2 px-4 text-center focus:outline-none border-b-2 ${selectedCategory === 'All-Rounders' ? 'border-green-500 text-green-700 font-medium' : 'border-transparent hover:text-green-700'}`}
+                    onClick={() => {
+                      setSelectedCategory('All-Rounders');
+                      setCurrentPage(1);
+                    }}
+                  >
                     All-Rounders
-                  </button>
-                  <button className="py-2 px-4 text-center focus:outline-none border-b-2 border-transparent hover:text-green-700">
-                    Wicket Keepers
                   </button>
                 </div>
 
                 <div className="space-y-4">
-                  <PlayerCard
-                    name="Kasun Rajapaksa"
-                    university="University of Colombo"
-                    stats={{
-                      points: 320,
-                      batStrikeRate: 138.5,
-                      batAverage: 45.2,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={1200}
-                    selected={false}
-                  />
-                  <PlayerCard
-                    name="Dinesh Fernando"
-                    university="University of Peradeniya"
-                    stats={{
-                      points: 280,
-                      batStrikeRate: 125.3,
-                      batAverage: 38.7,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={950}
-                    selected={true}
-                  />
-                  <PlayerCard
-                    name="Amal Perera"
-                    university="University of Moratuwa"
-                    stats={{
-                      points: 420,
-                      batStrikeRate: 142.8,
-                      batAverage: 52.1,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={1500}
-                    selected={false}
-                  />
-                  <PlayerCard
-                    name="Sunil Bandara"
-                    university="University of Kelaniya"
-                    stats={{
-                      points: 210,
-                      batStrikeRate: 118.2,
-                      batAverage: 32.5,
-                      bowlStrikeRate: 0,
-                      economy: 0,
-                    }}
-                    price={800}
-                    selected={false}
-                  />
-                  
-                  <PlayerCard
-                    name="Nuwan Silva"
-                    university="University of Colombo"
-                    stats={{
-                      points: 290,
-                      batStrikeRate: 95.2,
-                      batAverage: 18.4,
-                      bowlStrikeRate: 22.3,
-                      economy: 7.2,
-                    }}
-                    price={1100}
-                    selected={false}
-                  />
-                  <PlayerCard
-                    name="Lasith Kumara"
-                    university="University of Jaffna"
-                    stats={{
-                      points: 350,
-                      batStrikeRate: 68.5,
-                      batAverage: 12.3,
-                      bowlStrikeRate: 19.1,
-                      economy: 6.8,
-                    }}
-                    price={1300}
-                    selected={false}
-                  />
+                  {currentPlayers.map((player) => (
+                    <PlayerCard
+                      key={player._id}
+                      name={player.name}
+                      university={player.university}
+                      value={player.value}
+                      category={player.category}
+                      selected={false}
+                    />
+                  ))}
                 </div>
+                {indexOfLastPlayer < filteredPlayers.length && (
+                  <div className="flex justify-center mt-4">
+                    <button
+                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+                      onClick={handleLoadMore}
+                    >
+                      Load More
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -183,10 +202,6 @@ export default function CreateTeam() {
                     <div className="bg-gray-50 p-3 rounded-md">
                       <p className="text-xs text-gray-500">All-Rounders</p>
                       <p className="font-medium">0/3</p>
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded-md">
-                      <p className="text-xs text-gray-500">Wicket Keepers</p>
-                      <p className="font-medium">1/1</p>
                     </div>
                   </div>
                 </div>
@@ -247,5 +262,5 @@ export default function CreateTeam() {
         </div>
       </main>
     </div>
-  )
+  );
 }
