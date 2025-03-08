@@ -52,16 +52,14 @@ export function PlayerCard({ name, university, value, category, selected, onAdd,
   );
 }
 
-
 interface SelectedPlayerCardProps {
   name: string;
   university: string;
   type: string;
   price: number;
-  onRemove: () => void;
 }
 
-export function SelectedPlayerCard({ name, university, type, price, onRemove }: SelectedPlayerCardProps) {
+export function SelectedPlayerCard({ name, university, type, price }: SelectedPlayerCardProps) {
   return (
     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-md">
       <div className="flex items-center space-x-3">
@@ -77,12 +75,6 @@ export function SelectedPlayerCard({ name, university, type, price, onRemove }: 
         <span className="inline-block px-2 py-0.5 text-xs border border-gray-300 rounded-full mb-1">{type}</span>
         <p className="text-xs font-medium">${price}</p>
       </div>
-      <button
-        onClick={onRemove}
-        className="ml-4 px-2 py-1 text-xs text-red-500 border border-red-500 rounded-md hover:bg-red-50"
-      >
-        Remove
-      </button>
     </div>
   );
 }

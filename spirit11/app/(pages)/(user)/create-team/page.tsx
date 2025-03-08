@@ -2,6 +2,7 @@
 import { Search, Filter, DollarSign, ArrowLeft, Info } from "lucide-react";
 import { PlayerCard, SelectedPlayerCard } from "./components";
 import { useEffect, useState, MouseEvent } from "react";
+import { set } from "mongoose";
 
 export default function CreateTeam() {
   // fetch available players
@@ -21,8 +22,7 @@ export default function CreateTeam() {
   const [remainingBudget, setRemainingBudget] = useState<number>(100000);
   const playersPerPage = 10;
   const [budget, setBudget] = useState<number>(0);
-  const [newSelectedPlayers, setNewSelectedPlayers] = useState<Player[]>([]);
-  const [removedPlayers, setRemovedPlayers] = useState<Player[]>([]);
+  const[newSelectedPlayers, setNewSelectedPlayers] = useState<Player[]>([]);
 
   // make API call to fetch selected players of user
   useEffect(() => {
@@ -54,6 +54,7 @@ export default function CreateTeam() {
 
     fetchSelectedPlayers();
   }, []);
+
 
   useEffect(() => {
     async function fetchPlayers() {
@@ -127,23 +128,6 @@ export default function CreateTeam() {
     }
   };
 
-  const handleRemoveSelectedPlayer = (playerId: string) => {
-    console.log(playerId);
-    const player = selectedPlayers.find((p) => p._id === playerId);
-    if (player) {
-      setSelectedPlayers((prevSelected) =>
-        prevSelected.filter((p) => p._id !== playerId)
-      );
-      setRemovedPlayers((prevSelected) => [...prevSelected, player]);
-      setRemainingBudget((prevBudget) =>
-        parseFloat((Number(prevBudget) + Number(player.value)).toFixed(2))
-      );
-      setBudget((prevBudget) =>
-        parseFloat((Number(prevBudget) + Number(player.value)).toFixed(2))
-      );
-    }
-  };
-
   async function handleSaveTeam(event: MouseEvent<HTMLButtonElement>): Promise<void> {
     event.preventDefault();
     try {
@@ -170,7 +154,6 @@ export default function CreateTeam() {
       alert("There was an error saving your team. Please try again.");
     }
   }
-
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white border-b p-4 sticky top-0 z-10">
@@ -190,12 +173,12 @@ export default function CreateTeam() {
                 <DollarSign className="h-4 w-4 mr-1" />
                 Budget: ${remainingBudget} / ${budget}
               </div>
-              <button 
+                <button 
                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
                 onClick={handleSaveTeam}
-              >
+                >
                 Save Team
-              </button>
+                </button>
             </div>
           </div>
         </div>
@@ -394,7 +377,6 @@ export default function CreateTeam() {
                         university={player.university}
                         type={player.category}
                         price={player.value}
-                        onRemove={() => handleRemoveSelectedPlayer(player._id)}
                       />
                     ))}
                   </div>
