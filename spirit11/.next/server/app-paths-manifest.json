@@ -8,5 +8,8 @@
   "/(pages)/(user)/create-team/page": "app/(pages)/(user)/create-team/page.js",
   "/(pages)/(user)/leaderboard/page": "app/(pages)/(user)/leaderboard/page.js",
   "/(pages)/test/page": "app/(pages)/test/page.js",
-  "/(pages)/(user)/team/page": "app/(pages)/(user)/team/page.js"
+  "/(pages)/(user)/team/page": "app/(pages)/(user)/team/page.js",
+  "/page": "app/page.js",
+  "/(pages)/(user)/member/page": "app/(pages)/(user)/member/page.js",
+  "/(pages)/(user)/player/page": "app/(pages)/(user)/player/page.js"
 }
