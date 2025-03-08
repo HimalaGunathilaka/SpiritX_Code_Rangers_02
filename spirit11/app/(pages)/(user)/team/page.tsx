@@ -9,7 +9,6 @@ interface Player {
   role: string;
   team: string;
   price: number;
-  points: number;
   stats: string;
 }
 
@@ -28,7 +27,7 @@ export default function Team() {
   // Mock data for team
   const [team, setTeam] = useState<Team>({
     name: "Cricket Titans",
-    points: 1245,
+    points: 0,
     rank: 42,
     captain: {
       id: 1,
@@ -36,7 +35,6 @@ export default function Team() {
       role: "batsman",
       team: "University of Moratuwa",
       price: 1500000,
-      points: 420,
       stats: "Avg: 52.1, SR: 142.8"
     },
     viceCaptain: {
@@ -45,7 +43,6 @@ export default function Team() {
       role: "bowler",
       team: "University of Colombo",
       price: 1100000,
-      points: 290,
       stats: "Wickets: 18, Economy: 7.2"
     },
     players: [
@@ -55,7 +52,6 @@ export default function Team() {
         role: "batsman",
         team: "University of Moratuwa",
         price: 1500000,
-        points: 420,
         stats: "Avg: 52.1, SR: 142.8"
       },
       {
@@ -64,7 +60,6 @@ export default function Team() {
         role: "batsman",
         team: "University of Peradeniya",
         price: 950000,
-        points: 280,
         stats: "Avg: 38.7, SR: 125.3"
       },
       {
@@ -73,7 +68,6 @@ export default function Team() {
         role: "batsman",
         team: "University of Colombo",
         price: 1200000,
-        points: 320,
         stats: "Avg: 45.2, SR: 138.5"
       },
       {
@@ -82,7 +76,6 @@ export default function Team() {
         role: "batsman",
         team: "University of Kelaniya",
         price: 800000,
-        points: 210,
         stats: "Avg: 32.5, SR: 118.2"
       },
       {
@@ -91,7 +84,6 @@ export default function Team() {
         role: "bowler",
         team: "University of Colombo",
         price: 1100000,
-        points: 290,
         stats: "Wickets: 18, Economy: 7.2"
       },
       {
@@ -100,7 +92,6 @@ export default function Team() {
         role: "bowler",
         team: "University of Jaffna",
         price: 1300000,
-        points: 350,
         stats: "Wickets: 22, Economy: 6.8"
       },
       {
@@ -109,7 +100,6 @@ export default function Team() {
         role: "bowler",
         team: "University of Ruhuna",
         price: 900000,
-        points: 240,
         stats: "Wickets: 15, Economy: 7.5"
       },
       {
@@ -118,7 +108,6 @@ export default function Team() {
         role: "bowler",
         team: "University of Sri Jayewardenepura",
         price: 850000,
-        points: 230,
         stats: "Wickets: 14, Economy: 7.8"
       },
       {
@@ -127,7 +116,6 @@ export default function Team() {
         role: "all-rounder",
         team: "University of Ruhuna",
         price: 1250000,
-        points: 330,
         stats: "Avg: 28.5, Wickets: 15"
       },
       {
@@ -136,7 +124,6 @@ export default function Team() {
         role: "all-rounder",
         team: "University of Kelaniya",
         price: 1150000,
-        points: 310,
         stats: "Avg: 26.8, Wickets: 12"
       },
       {
@@ -145,7 +132,6 @@ export default function Team() {
         role: "wicket-keeper",
         team: "University of Sri Jayewardenepura",
         price: 1050000,
-        points: 310,
         stats: "Avg: 35.8, Dismissals: 24"
       }
     ]
@@ -299,52 +285,6 @@ export default function Team() {
                   </dl>
                 </div>
               </div>
-
-              {/* Team Visualization */}
-              <div className="mt-8 bg-white shadow sm:rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Team Formation
-                  </h3>
-                  <div className="mt-6 relative">
-                    {/* Cricket field visualization */}
-                    <div className="bg-green-100 rounded-full w-full h-96 flex flex-col items-center justify-between py-8 relative overflow-hidden">
-                      {/* Pitch in the middle */}
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-64 bg-green-200 rounded-lg"></div>
-                      
-                      {/* Wicket keepers */}
-                      <div className="z-10 flex justify-center w-full">
-                        {wicketKeepers.map(player => (
-                          <PlayerBubble key={player.id} player={player} isCaptain={player.id === team.captain.id} isViceCaptain={player.id === team.viceCaptain.id} />
-                        ))}
-                      </div>
-                      
-                      {/* Batsmen */}
-                      <div className="z-10 flex justify-around w-3/4">
-                        {batsmen.map(player => (
-                          <PlayerBubble key={player.id} player={player} isCaptain={player.id === team.captain.id} isViceCaptain={player.id === team.viceCaptain.id} />
-                        ))}
-                      </div>
-                      
-                      {/* All-rounders */}
-                      <div className="z-10 flex justify-around w-full">
-                        {allRounders.map(player => (
-                          <PlayerBubble key={player.id} player={player} isCaptain={player.id === team.captain.id} isViceCaptain={player.id === team.viceCaptain.id} />
-                        ))}
-                      </div>
-                      
-                      {/* Bowlers */}
-                      <div className="z-10 flex justify-around w-3/4">
-                        {bowlers.map(player => (
-                          <PlayerBubble key={player.id} player={player} isCaptain={player.id === team.captain.id} isViceCaptain={player.id === team.viceCaptain.id} />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Team Players */}
               <div className="mt-8">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg leading-6 font-medium text-gray-900">Team Players</h2>
@@ -353,54 +293,60 @@ export default function Team() {
                   <ul className="divide-y divide-gray-200 bg-white">
                     {team.players.map((player) => (
                       <li key={player.id}>
-                        <div className="block hover:bg-gray-50">
-                          <div className="px-4 py-4 sm:px-6">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center">
-                                <div className="flex-shrink-0 h-10 w-10">
-                                  <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-medium">
-                                    {player.name.charAt(0)}
-                                  </div>
-                                </div>
-                                <div className="ml-4">
-                                  <div className="flex items-center">
-                                    <div className="text-sm font-medium text-gray-900">{player.name}</div>
-                                    {player.id === team.captain.id && (
-                                      <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                        Captain
-                                      </span>
-                                    )}
-                                    {player.id === team.viceCaptain.id && (
-                                      <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        Vice Captain
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div className="text-sm text-gray-500">{player.team}</div>
-                                </div>
-                              </div>
-                              <div className="flex items-center">
-                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                  player.role === 'batsman' ? 'bg-blue-100 text-blue-800' :
-                                  player.role === 'bowler' ? 'bg-green-100 text-green-800' :
-                                  player.role === 'all-rounder' ? 'bg-purple-100 text-purple-800' :
-                                  'bg-yellow-100 text-yellow-800'
-                                } mr-2`}>
-                                  {player.role}
-                                </span>
-                                <span className="text-sm font-medium text-gray-900 mr-2">
-                                  Rs.{player.price.toLocaleString()}
-                                </span>
-                                <span className="text-sm font-medium text-gray-900">
-                                  {player.points} pts
-                                </span>
-                              </div>
-                            </div>
-                            <div className="mt-2 text-sm text-gray-500">
-                              {player.stats}
+                      <div className="block hover:bg-gray-50">
+                        <div className="px-4 py-4 sm:px-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-medium">
+                            {player.name.charAt(0)}
                             </div>
                           </div>
+                          <div className="ml-4">
+                            <div className="flex items-center">
+                            <div className="text-sm font-medium text-gray-900">{player.name}</div>
+                            {player.id === team.captain.id && (
+                              <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                              Captain
+                              </span>
+                            )}
+                            {player.id === team.viceCaptain.id && (
+                              <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                              Vice Captain
+                              </span>
+                            )}
+                            </div>
+                            <div className="text-sm text-gray-500">{player.team}</div>
+                          </div>
+                          </div>
+                          <div className="flex items-center">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            player.role === 'batsman' ? 'bg-blue-100 text-blue-800' :
+                            player.role === 'bowler' ? 'bg-green-100 text-green-800' :
+                            player.role === 'all-rounder' ? 'bg-purple-100 text-purple-800' :
+                            'bg-yellow-100 text-yellow-800'
+                          } mr-2`}>
+                            {player.role}
+                          </span>
+                          <span className="text-sm font-medium text-gray-900 mr-2">
+                            Rs.{player.price.toLocaleString()}
+                          </span>
+                          <button
+                            className="px-2 py-1 text-white bg-red-700 hover:bg-red-500 rounded"
+                            onClick={() => setTeam(prevTeam => ({
+                            ...prevTeam,
+                            players: prevTeam.players.filter(p => p.id !== player.id)
+                            }))}
+                          >
+                            Remove
+                          </button>
+                          </div>
                         </div>
+                        <div className="mt-2 text-sm text-gray-500">
+                          {player.stats}
+                        </div>
+                        </div>
+                      </div>
                       </li>
                     ))}
                   </ul>
