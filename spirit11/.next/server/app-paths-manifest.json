@@ -1,7 +1,6 @@
 {
-  "/api/player/route": "app/api/player/route.js",
-  "/(pages)/test/page": "app/(pages)/test/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js",
   "/(pages)/user/page": "app/(pages)/user/page.js",
-  "/_not-found/page": "app/_not-found/page.js"
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/(pages)/user/create-team/page": "app/(pages)/user/create-team/page.js"
 }
