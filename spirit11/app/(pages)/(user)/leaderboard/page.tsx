@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { getTargetTriple } from "next/dist/build/swc/generated-native";
+import { useEffect, useState } from "react";
 
 type LeaderboardEntry = {
   rank: number;
@@ -11,6 +12,12 @@ type LeaderboardEntry = {
   isCurrentUser?: boolean;
 };
 
+interface user{
+  name:string,
+  points:number,
+  teamname:string,
+}
+
 type LeaderboardData = {
   global: LeaderboardEntry[];
   university: LeaderboardEntry[];
@@ -18,39 +25,64 @@ type LeaderboardData = {
 };
 
 export default function Leaderboard() {
-  // Mock data for leaderboard
-  const [leaderboardData, setLeaderboardData] = useState<LeaderboardData>({
-    global: [
-      { rank: 1, user: "cricket_master", team: "Master XI", points: 1890, university: "University of Colombo" },
-      { rank: 2, user: "fantasy_king", team: "Royal Challengers", points: 1845, university: "University of Peradeniya" },
-      { rank: 3, user: "wicket_wizard", team: "Wizard XI", points: 1820, university: "University of Moratuwa" },
-      { rank: 4, user: "boundary_hunter", team: "Boundary Kings", points: 1790, university: "University of Kelaniya" },
-      { rank: 5, user: "captain_cool", team: "Cool XI", points: 1760, university: "University of Jaffna" },
-      { rank: 6, user: "cricket_fan", team: "Fan XI", points: 1730, university: "University of Ruhuna" },
-      { rank: 7, user: "fantasy_pro", team: "Pro XI", points: 1700, university: "University of Sri Jayewardenepura" },
-      { rank: 8, user: "cricket_guru", team: "Guru XI", points: 1670, university: "University of Colombo" },
-      { rank: 9, user: "fantasy_expert", team: "Expert XI", points: 1640, university: "University of Peradeniya" },
-      { rank: 10, user: "cricket_legend", team: "Legend XI", points: 1610, university: "University of Moratuwa" },
-      { rank: 42, user: "current_user", team: "Cricket Titans", points: 1245, university: "University of Colombo", isCurrentUser: true }
-    ],
-    university: [
-      { rank: 1, user: "cricket_master", team: "Master XI", points: 1890, university: "University of Colombo" },
-      { rank: 2, user: "cricket_guru", team: "Guru XI", points: 1670, university: "University of Colombo" },
-      { rank: 3, user: "cricket_star", team: "Star XI", points: 1580, university: "University of Colombo" },
-      { rank: 4, user: "cricket_pro", team: "Pro XI", points: 1520, university: "University of Colombo" },
-      { rank: 5, user: "cricket_fan", team: "Fan XI", points: 1480, university: "University of Colombo" },
-      { rank: 6, user: "current_user", team: "Cricket Titans", points: 1245, university: "University of Colombo", isCurrentUser: true }
-    ],
-    friends: [
-      { rank: 1, user: "friend1", team: "Friend XI", points: 1650, university: "University of Peradeniya" },
-      { rank: 2, user: "friend2", team: "Buddy XI", points: 1580, university: "University of Moratuwa" },
-      { rank: 3, user: "friend3", team: "Pal XI", points: 1520, university: "University of Colombo" },
-      { rank: 4, user: "current_user", team: "Cricket Titans", points: 1245, university: "University of Colombo", isCurrentUser: true },
-      { rank: 5, user: "friend4", team: "Mate XI", points: 1180, university: "University of Kelaniya" }
-    ]
-  });
+  const [users, setUsers] = useState<user[]>([]);
+
+  useEffect(()=>{
+    async function getUsers() {
+      try {
+        const response = await fetch('api/user/users', {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await response.json();
+        const filteredData = data.map((user: any) => ({
+          name: user.name,
+          points: user.points,
+          teamname: user.teamname
+        }));
+        setUsers(filteredData);
+      } catch (error) {
+        console.error('Error fetching players:', error);
+      }
+    }
+    getUsers();
+  },[]);
+
+  useEffect(()=>{
+    console.log(users);
+  },[users]);
 
   const [activeTab, setActiveTab] = useState<keyof LeaderboardData>("global");
+  
+  // Transform users array into leaderboard data
+  const generateLeaderboardData = (): LeaderboardData => {
+    // Sort users by points in descending order
+    const sortedUsers = [...users].sort((a, b) => b.points - a.points);
+    
+    // Map to LeaderboardEntry format
+    const leaderboardEntries = sortedUsers.map((user, index) => ({
+      rank: index + 1,
+      user: user.name,
+      team: user.teamname, // Placeholder team names
+      points: user.points,
+      university: "University " + (index % 3 + 1), // Placeholder university names
+      isCurrentUser: user.name === "Current User" // Replace with actual current user check
+    }));
+    
+    // For demo purposes, we'll use the same data for all tabs
+    // In a real app, you would filter differently for each tab
+    return {
+      global: leaderboardEntries,
+      university: leaderboardEntries.filter(entry => entry.university === "University 1"),
+      friends: leaderboardEntries.slice(0, 5) // Just taking first 5 as demo friends
+    };
+  };
+  
+  const leaderboardData = generateLeaderboardData();
+  
+  // Find current user's rank
+  const currentUserRank = leaderboardData[activeTab].find(entry => entry.isCurrentUser)?.rank || 0;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -130,44 +162,14 @@ export default function Leaderboard() {
                     value={activeTab}
                     onChange={(e) => setActiveTab(e.target.value as keyof LeaderboardData)}
                   >
-                    <option value="global">Global</option>
+                    {/* <option value="global">Global</option>
                     <option value="university">University</option>
-                    <option value="friends">Friends</option>
+                    <option value="friends">Friends</option> */}
                   </select>
                 </div>
                 <div className="hidden sm:block">
                   <div className="border-b border-gray-200">
                     <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-                      <button
-                        onClick={() => setActiveTab("global")}
-                        className={`${
-                          activeTab === "global"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                        } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-                      >
-                        Global
-                      </button>
-                      <button
-                        onClick={() => setActiveTab("university")}
-                        className={`${
-                          activeTab === "university"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                        } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-                      >
-                        University
-                      </button>
-                      <button
-                        onClick={() => setActiveTab("friends")}
-                        className={`${
-                          activeTab === "friends"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                        } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-                      >
-                        Friends
-                      </button>
                     </nav>
                   </div>
                 </div>
@@ -191,126 +193,142 @@ export default function Leaderboard() {
                               Team
                             </th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              University
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               Points
                             </th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                          {leaderboardData[activeTab].map((entry) => (
-                            <tr key={entry.rank} className={entry.isCurrentUser ? "bg-green-50" : ""}>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center">
-                                  <div className="text-sm font-medium text-gray-900">
-                                    {entry.rank === 1 ? (
-                                      <span className="flex items-center">
-                                        <svg className="h-5 w-5 text-yellow-400 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                          <path fillRule="evenodd" d="M6 3.75A2.75 2.75 0 018.75 1h2.5A2.75 2.75 0 0114 3.75v.443c.572.055 1.14.122 1.706.2C17.053 4.582 18 5.75 18 7.07v3.469c0 1.126-.694 2.191-1.83 2.54-1.952.599-4.024.921-6.17.921s-4.219-.322-6.17-.921C2.694 12.73 2 11.665 2 10.539V7.07c0-1.321.947-2.489 2.294-2.676A41.047 41.047 0 016 4.193V3.75zm6.5 0v.325a41.622 41.622 0 00-5 0V3.75c0-.69.56-1.25 1.25-1.25h2.5c.69 0 1.25.56 1.25 1.25zM10 10a1 1 0 00-1 1v.01a1 1 0 001 1h.01a1 1 0 001-1V11a1 1 0 00-1-1H10z" clipRule="evenodd" />
-                                          <path d="M3 15.055v-.684c.126.053.255.1.39.142 2.092.642 4.313.987 6.61.987 2.297 0 4.518-.345 6.61-.987.135-.041.264-.089.39-.142v.684c0 1.347-.985 2.53-2.363 2.686a41.454 41.454 0 01-9.274 0C3.985 17.585 3 16.402 3 15.055z" />
-                                        </svg>
-                                        {entry.rank}
-                                      </span>
-                                    ) : entry.rank === 2 ? (
-                                      <span className="flex items-center">
-                                        <svg className="h-5 w-5 text-gray-400 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                          <path fillRule="evenodd" d="M6 3.75A2.75 2.75 0 018.75 1h2.5A2.75 2.75 0 0114 3.75v.443c.572.055 1.14.122 1.706.2C17.053 4.582 18 5.75 18 7.07v3.469c0 1.126-.694 2.191-1.83 2.54-1.952.599-4.024.921-6.17.921s-4.219-.322-6.17-.921C2.694 12.73 2 11.665 2 10.539V7.07c0-1.321.947-2.489 2.294-2.676A41.047 41.047 0 016 4.193V3.75zm6.5 0v.325a41.622 41.622 0 00-5 0V3.75c0-.69.56-1.25 1.25-1.25h2.5c.69 0 1.25.56 1.25 1.25zM10 10a1 1 0 00-1 1v.01a1 1 0 001 1h.01a1 1 0 001-1V11a1 1 0 00-1-1H10z" clipRule="evenodd" />
-                                          <path d="M3 15.055v-.684c.126.053.255.1.39.142 2.092.642 4.313.987 6.61.987 2.297 0 4.518-.345 6.61-.987.135-.041.264-.089.39-.142v.684c0 1.347-.985 2.53-2.363 2.686a41.454 41.454 0 01-9.274 0C3.985 17.585 3 16.402 3 15.055z" />
-                                        </svg>
-                                        {entry.rank}
-                                      </span>
-                                    ) : entry.rank === 3 ? (
-                                      <span className="flex items-center">
-                                        <svg className="h-5 w-5 text-amber-600 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                          <path fillRule="evenodd" d="M6 3.75A2.75 2.75 0 018.75 1h2.5A2.75 2.75 0 0114 3.75v.443c.572.055 1.14.122 1.706.2C17.053 4.582 18 5.75 18 7.07v3.469c0 1.126-.694 2.191-1.83 2.54-1.952.599-4.024.921-6.17.921s-4.219-.322-6.17-.921C2.694 12.73 2 11.665 2 10.539V7.07c0-1.321.947-2.489 2.294-2.676A41.047 41.047 0 016 4.193V3.75zm6.5 0v.325a41.622 41.622 0 00-5 0V3.75c0-.69.56-1.25 1.25-1.25h2.5c.69 0 1.25.56 1.25 1.25zM10 10a1 1 0 00-1 1v.01a1 1 0 001 1h.01a1 1 0 001-1V11a1 1 0 00-1-1H10z" clipRule="evenodd" />
-                                          <path d="M3 15.055v-.684c.126.053.255.1.39.142 2.092.642 4.313.987 6.61.987 2.297 0 4.518-.345 6.61-.987.135-.041.264-.089.39-.142v.684c0 1.347-.985 2.53-2.363 2.686a41.454 41.454 0 01-9.274 0C3.985 17.585 3 16.402 3 15.055z" />
-                                        </svg>
-                                        {entry.rank}
-                                      </span>
-                                    ) : (
-                                      entry.rank
-                                    )}
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center">
-                                  <div className="flex-shrink-0 h-10 w-10">
-                                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-medium">
-                                      {entry.user.charAt(0).toUpperCase()}
-                                    </div>
-                                  </div>
-                                  <div className="ml-4">
+                          {users.length > 0 ? (
+                            leaderboardData[activeTab].map((entry) => (
+                              <tr key={entry.rank} className={entry.isCurrentUser ? "bg-green-50" : ""}>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="flex items-center">
                                     <div className="text-sm font-medium text-gray-900">
-                                      {entry.user}
-                                      {entry.isCurrentUser && (
-                                        <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                          You
+                                      {entry.rank === 1 ? (
+                                        <span className="flex items-center">
+                                          <svg className="h-5 w-5 text-yellow-400 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M6 3.75A2.75 2.75 0 018.75 1h2.5A2.75 2.75 0 0114 3.75v.443c.572.055 1.14.122 1.706.2C17.053 4.582 18 5.75 18 7.07v3.469c0 1.126-.694 2.191-1.83 2.54-1.952.599-4.024.921-6.17.921s-4.219-.322-6.17-.921C2.694 12.73 2 11.665 2 10.539V7.07c0-1.321.947-2.489 2.294-2.676A41.047 41.047 0 016 4.193V3.75zm6.5 0v.325a41.622 41.622 0 00-5 0V3.75c0-.69.56-1.25 1.25-1.25h2.5c.69 0 1.25.56 1.25 1.25zM10 10a1 1 0 00-1 1v.01a1 1 0 001 1h.01a1 1 0 001-1V11a1 1 0 00-1-1H10z" clipRule="evenodd" />
+                                            <path d="M3 15.055v-.684c.126.053.255.1.39.142 2.092.642 4.313.987 6.61.987 2.297 0 4.518-.345 6.61-.987.135-.041.264-.089.39-.142v.684c0 1.347-.985 2.53-2.363 2.686a41.454 41.454 0 01-9.274 0C3.985 17.585 3 16.402 3 15.055z" />
+                                          </svg>
+                                          {entry.rank}
                                         </span>
+                                      ) : entry.rank === 2 ? (
+                                        <span className="flex items-center">
+                                          <svg className="h-5 w-5 text-gray-400 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M6 3.75A2.75 2.75 0 018.75 1h2.5A2.75 2.75 0 0114 3.75v.443c.572.055 1.14.122 1.706.2C17.053 4.582 18 5.75 18 7.07v3.469c0 1.126-.694 2.191-1.83 2.54-1.952.599-4.024.921-6.17.921s-4.219-.322-6.17-.921C2.694 12.73 2 11.665 2 10.539V7.07c0-1.321.947-2.489 2.294-2.676A41.047 41.047 0 016 4.193V3.75zm6.5 0v.325a41.622 41.622 0 00-5 0V3.75c0-.69.56-1.25 1.25-1.25h2.5c.69 0 1.25.56 1.25 1.25zM10 10a1 1 0 00-1 1v.01a1 1 0 001 1h.01a1 1 0 001-1V11a1 1 0 00-1-1H10z" clipRule="evenodd" />
+                                            <path d="M3 15.055v-.684c.126.053.255.1.39.142 2.092.642 4.313.987 6.61.987 2.297 0 4.518-.345 6.61-.987.135-.041.264-.089.39-.142v.684c0 1.347-.985 2.53-2.363 2.686a41.454 41.454 0 01-9.274 0C3.985 17.585 3 16.402 3 15.055z" />
+                                          </svg>
+                                          {entry.rank}
+                                        </span>
+                                      ) : entry.rank === 3 ? (
+                                        <span className="flex items-center">
+                                          <svg className="h-5 w-5 text-amber-600 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M6 3.75A2.75 2.75 0 018.75 1h2.5A2.75 2.75 0 0114 3.75v.443c.572.055 1.14.122 1.706.2C17.053 4.582 18 5.75 18 7.07v3.469c0 1.126-.694 2.191-1.83 2.54-1.952.599-4.024.921-6.17.921s-4.219-.322-6.17-.921C2.694 12.73 2 11.665 2 10.539V7.07c0-1.321.947-2.489 2.294-2.676A41.047 41.047 0 016 4.193V3.75zm6.5 0v.325a41.622 41.622 0 00-5 0V3.75c0-.69.56-1.25 1.25-1.25h2.5c.69 0 1.25.56 1.25 1.25zM10 10a1 1 0 00-1 1v.01a1 1 0 001 1h.01a1 1 0 001-1V11a1 1 0 00-1-1H10z" clipRule="evenodd" />
+                                            <path d="M3 15.055v-.684c.126.053.255.1.39.142 2.092.642 4.313.987 6.61.987 2.297 0 4.518-.345 6.61-.987.135-.041.264-.089.39-.142v.684c0 1.347-.985 2.53-2.363 2.686a41.454 41.454 0 01-9.274 0C3.985 17.585 3 16.402 3 15.055z" />
+                                          </svg>
+                                          {entry.rank}
+                                        </span>
+                                      ) : (
+                                        entry.rank
                                       )}
                                     </div>
                                   </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">{entry.team}</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">{entry.university}</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div className="text-gray-900 font-bold">{entry.points}</div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="flex items-center">
+                                    <div className="flex-shrink-0 h-10 w-10">
+                                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-medium">
+                                        {entry.user.charAt(0).toUpperCase()}
+                                      </div>
+                                    </div>
+                                    <div className="ml-4">
+                                      <div className="text-sm font-medium text-gray-900">
+                                        {entry.user}
+                                        {entry.isCurrentUser && (
+                                          <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            You
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="text-sm text-gray-900">{entry.team}</div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                  <div className="text-gray-900 font-bold">{entry.points}</div>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
+                                Loading leaderboard data...
                               </td>
                             </tr>
-                          ))}
+                          )}
                         </tbody>
                       </table>
-                      You are currently ranked #{leaderboardData[activeTab as keyof LeaderboardData].find(entry => entry.isCurrentUser)?.rank} in the {activeTab} leaderboard.
+                      {users.length > 0 && 
+                        <div className="px-6 py-3 bg-gray-50 text-sm">
+                          You are currently ranked #{currentUserRank} in the {activeTab} leaderboard.
+                        </div>
+                      }
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Your Position */}
-              <div className="mt-8 bg-white shadow sm:rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Your Position
-                  </h3>
-                  <div className="mt-2 max-w-xl text-sm text-gray-500">
-                    <p>
-                      You are currently ranked #{leaderboardData[activeTab].find(entry => entry.isCurrentUser)?.rank} in the {activeTab} leaderboard.
-                    </p>
-                  </div>
-                  <div className="mt-5">
-                    <div className="relative pt-1">
-                      <div className="flex mb-2 items-center justify-between">
-                        <div>
-                          <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200">
-                            Progress to Top 10
-                          </span>
+              {users.length > 0 && (
+                <div className="mt-8 bg-white shadow sm:rounded-lg">
+                  <div className="px-4 py-5 sm:p-6">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      Your Position
+                    </h3>
+                    <div className="mt-2 max-w-xl text-sm text-gray-500">
+                      <p>
+                        You are currently ranked #{currentUserRank} in the {activeTab} leaderboard.
+                      </p>
+                    </div>
+                    <div className="mt-5">
+                      <div className="relative pt-1">
+                        <div className="flex mb-2 items-center justify-between">
+                          <div>
+                            <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200">
+                              Progress to Top 10
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200">
+                              {currentUserRank > 10 ? `${Math.min(100, Math.round((1 - (currentUserRank - 10) / currentUserRank) * 100))}%` : '100%'}
+                            </span>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200">
-                            {activeTab === "global" ? "66%" : activeTab === "university" ? "83%" : "80%"}
-                          </span>
+                        <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-green-200">
+                          <div 
+                            style={{ width: currentUserRank > 10 ? `${Math.min(100, Math.round((1 - (currentUserRank - 10) / currentUserRank) * 100))}%` : '100%' }} 
+                            className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500">
+                          </div>
                         </div>
-                      </div>
-                      <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-green-200">
-                        <div style={{ width: activeTab === "global" ? "66%" : activeTab === "university" ? "83%" : "80%" }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
                       </div>
                     </div>
-                  </div>
-                  <div className="mt-3">
-                    <div className="text-sm">
-                      <p>
-                        You need <span className="font-medium text-green-600">{activeTab === "global" ? "365" : activeTab === "university" ? "235" : "335"}</span> more points to reach the top 10.
-                      </p>
+                    <div className="mt-3">
+                      <div className="text-sm">
+                        <p>
+                          {currentUserRank > 10 ? 
+                            <>You need <span className="font-medium text-green-600">
+                              {Math.round(users[9]?.points || 0) - Math.round(users.find(u => u.name === "Current User")?.points || 0)}
+                            </span> more points to reach the top 10.</> : 
+                            <>You're already in the top 10. Keep it up!</>
+                          }
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

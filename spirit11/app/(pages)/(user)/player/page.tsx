@@ -109,7 +109,7 @@ export default function PlayerStats() {
                   isPositive={false}
                 />
                 <FormItem
-                  opponent="University of Kelaniya"
+                  opponent="University of Kelaniy"
                   date="Feb 28, 2023"
                   performance="89 (62)"
                   isPositive={true}

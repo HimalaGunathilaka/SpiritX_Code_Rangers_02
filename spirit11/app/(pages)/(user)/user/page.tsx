@@ -3,16 +3,84 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const router = useRouter();
+
+
+  // get player stats and user info
+  interface Player {
+    _id: string;
+    name: string;
+    university: string;
+    value: string;
+    category: string;
+    totalruns: number;
+    ballsfaced: number;
+    inningsplayed: number;
+    wickets: number;
+    overbowled: number;
+    runsconceded: number;
+    available: boolean;
+  }
+
+  interface User {
+    _id: string;
+    name: string;
+    password: string;
+    team: Player[];
+    budget: number;
+    createdAt: string;
+    updatedAt: string;
+  }
+
+  const [userData, setUserData] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/user?id=67cc39310e8e5d2de616a75a", {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        const data: User = await response.json();
+        const mappedData: User = {
+          ...data,
+          team: data.team.map(player => ({
+            ...player,
+            value: player.value.toString()
+          }))
+        };
+        setUserData(mappedData);
+        console.log(mappedData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+    // console.log(userData);
+  }, []);
+  const[totalValue, setTotalValue] = useState(0);
+  const[totalPoints, setTotalPoints] = useState(0);
+  useEffect(() => {
+    if (userData) {
+      const totalValue = userData.team.reduce((acc, player) => acc + parseFloat(player.value), 0);
+      setTotalValue(totalValue);
+      console.log("Total Team Value:", totalValue);
+      const totalPoints = ((totalValue/1000) -100)/9;
+      setTotalPoints(totalPoints);
+    }
+  }, [userData]);
   
   // Mock data for dashboard
   const userTeam = {
     name: "Cricket Titans",
-    points: 1245,
-    rank: 42,
-    players: 11,
+    points: totalPoints.toFixed(2),
+    rank: 2,
+    players: userData?.team.length ?? 0,
     captainName: "A. Perera",
     budget: {
       total: 10000000,
@@ -27,29 +95,8 @@ export default function Dashboard() {
     }
   };
 
-  const user = {
-    name: "John Smith",
-    username: "john_smith",
-    university: "University of Colombo",
-    joinDate: "Oct 2023"
-  };
   
-  const upcomingMatches = [
-    {
-      id: 1,
-      team1: "University of Colombo",
-      team2: "University of Peradeniya",
-      date: "Today, 2:00 PM",
-      venue: "Colombo Cricket Ground"
-    },
-    {
-      id: 2,
-      team1: "University of Moratuwa",
-      team2: "University of Kelaniya",
-      date: "Tomorrow, 10:00 AM",
-      venue: "Moratuwa University Stadium"
-    }
-  ];
+  
 
   // Add team players mock data
   const teamPlayers = [
@@ -95,6 +142,23 @@ export default function Dashboard() {
     }
   ];
 
+  const upcomingMatches = [
+    {
+      id: 1,
+      team1: "University of Colombo",
+      team2: "University of Peradeniya",
+      date: "Today, 2:00 PM",
+      venue: "Colombo Cricket Ground"
+    },
+    {
+      id: 2,
+      team1: "University of Moratuwa",
+      team2: "University of Kelaniya",
+      date: "Tomorrow, 10:00 AM",
+      venue: "Moratuwa University Stadium"
+    }
+  ];
+
   const [activeTab, setActiveTab] = useState("team");
 
   return (
@@ -117,7 +181,7 @@ export default function Dashboard() {
                 </svg>
               </button>
               <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-600">{user.name.charAt(0)}</span>
+                <span className="text-sm font-medium text-gray-600">{userData?.name.charAt(0)}</span>
               </div>
             </div>
           </div>
@@ -166,16 +230,16 @@ export default function Dashboard() {
               {/* User Profile Section */}
               <div className="bg-white shadow rounded-lg p-6 flex items-center">
                 <div className="h-16 w-16 bg-gray-200 rounded-full flex items-center justify-center text-2xl font-bold text-gray-600">
-                  {user.name.charAt(0)}
+                  {userData?.name.charAt(0)}
                 </div>
                 <div className="ml-6">
-                  <h2 className="text-xl font-bold text-gray-900">{user.name}</h2>
+                  <h2 className="text-xl font-bold text-gray-900">{userData?.name}</h2>
                   <div className="flex items-center text-gray-500 space-x-4">
-                    <p>@{user.username}</p>
+                    <p>@{userData?.name}</p>
                     <span>•</span>
-                    <p>{user.university}</p>
+                    
                     <span>•</span>
-                    <p>Joined {user.joinDate}</p>
+                    
                   </div>
                 </div>
               </div>
@@ -198,12 +262,13 @@ export default function Dashboard() {
                             <dt className="text-sm font-medium text-gray-500 truncate">
                               Available Budget
                             </dt>
-                            <dd>
+                           
+                          </dl>
+                          <dd>
                               <div className="text-lg font-medium text-gray-900">
-                                Rs.{userTeam.budget.remaining.toLocaleString()}
+                                Rs.{((userData?.budget ?? 0) )}
                               </div>
                             </dd>
-                          </dl>
                         </div>
                       </div>
                     </div>
@@ -326,13 +391,13 @@ export default function Dashboard() {
                           <h4 className="text-sm font-medium text-gray-500 mb-2">Budget Allocation</h4>
                           <div className="bg-gray-50 p-4 rounded-md">
                             <div className="flex justify-between text-sm mb-1">
-                              <span>Rs.{userTeam.budget.used.toLocaleString()} / Rs.{userTeam.budget.total.toLocaleString()}</span>
-                              <span>{Math.round((userTeam.budget.used / userTeam.budget.total) * 100)}% used</span>
+                                <span>Rs.{totalValue} / Rs.{((userData?.budget ?? 0) + totalValue).toLocaleString()}</span>
+                              <span>{Math.round((totalValue/ ((userData?.budget ?? 0) + totalValue)) * 100)}% used</span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2">
                               <div 
                                 className="bg-green-500 h-2 rounded-full" 
-                                style={{ width: `${(userTeam.budget.used / userTeam.budget.total) * 100}%` }}
+                                style={{ width: `${((((userData?.budget ?? 0) + totalValue)-totalValue)/ ((userData?.budget ?? 0) + totalValue)) * 100}%` }}
                               ></div>
                             </div>
                           </div>
@@ -340,24 +405,21 @@ export default function Dashboard() {
                         
                         <div>
                           <h4 className="text-sm font-medium text-gray-500 mb-2">Team Composition</h4>
-                          <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-2 gap-2">
                             <div className="bg-gray-50 p-3 rounded-md">
                               <p className="text-xs text-gray-500">Batsmen</p>
-                              <p className="font-medium">{userTeam.playerComposition.batsmen}/4</p>
+                              <p className="font-medium">{userData?.team.filter(player => player.category === "Batsman").length}/4</p>
                             </div>
                             <div className="bg-gray-50 p-3 rounded-md">
                               <p className="text-xs text-gray-500">Bowlers</p>
-                              <p className="font-medium">{userTeam.playerComposition.bowlers}/3</p>
+                              <p className="font-medium">{userData?.team.filter(player => player.category === "Bowler").length}/3</p>
                             </div>
                             <div className="bg-gray-50 p-3 rounded-md">
                               <p className="text-xs text-gray-500">All-Rounders</p>
-                              <p className="font-medium">{userTeam.playerComposition.allRounders}/3</p>
+                              <p className="font-medium">{userData?.team.filter(player => player.category === "All-Rounder").length}/3</p>
                             </div>
-                            <div className="bg-gray-50 p-3 rounded-md">
-                              <p className="text-xs text-gray-500">Wicket Keepers</p>
-                              <p className="font-medium">{userTeam.playerComposition.wicketKeepers}/1</p>
+                            
                             </div>
-                          </div>
                         </div>
                       </div>
                       
@@ -374,65 +436,62 @@ export default function Dashboard() {
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
-                              {teamPlayers.map((player) => (
-                                <tr key={player.id}>
+                                {userData?.team.map((player) => (
+                                <tr key={player._id}>
                                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
-                                    <div className="flex items-center">
-                                      <div className="h-10 w-10 flex-shrink-0 rounded-full bg-gray-200">
-                                        {/* Player image placeholder */}
-                                        <div className="h-10 w-10 rounded-full flex items-center justify-center text-gray-500 font-medium">
-                                          {player.name.substring(0, 2)}
-                                        </div>
-                                      </div>
-                                      <div className="ml-4">
-                                        <div className="font-medium text-gray-900">{player.name}</div>
-                                        {player.role === "All-Rounder" && (
-                                          <div className="text-gray-500">Captain</div>
-                                        )}
-                                      </div>
+                                  <div className="flex items-center">
+                                    <div className="h-10 w-10 flex-shrink-0 rounded-full bg-gray-200">
+                                    {/* Player image placeholder */}
+                                    <div className="h-10 w-10 rounded-full flex items-center justify-center text-gray-500 font-medium">
+                                      {player.name.substring(0, 2)}
                                     </div>
+                                    </div>
+                                    <div className="ml-4">
+                                    <div className="font-medium text-gray-900">{player.name}</div>
+                                    </div>
+                                  </div>
                                   </td>
                                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                      player.role === "Batsman" ? "bg-blue-100 text-blue-800" : 
-                                      player.role === "Bowler" ? "bg-green-100 text-green-800" :
-                                      player.role === "All-Rounder" ? "bg-purple-100 text-purple-800" :
-                                      "bg-yellow-100 text-yellow-800"
-                                    }`}>
-                                      {player.role}
-                                    </span>
+                                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                    player.category === "Batsman" ? "bg-blue-100 text-blue-800" : 
+                                    player.category === "Bowler" ? "bg-green-100 text-green-800" :
+                                    player.category === "All-Rounder" ? "bg-purple-100 text-purple-800" :
+                                    "bg-yellow-100 text-yellow-800"
+                                  }`}>
+                                    {player.category}
+                                  </span>
                                   </td>
                                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                    {player.university}
+                                  {player.university}
                                   </td>
                                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                    {player.role === "Batsman" && (
-                                      <div>
-                                        <div>{player.stats.runs} runs</div>
-                                        <div className="text-xs">Avg: {player.stats.average} | SR: {player.stats.strikeRate}</div>
-                                      </div>
-                                    )}
-                                    {player.role === "Bowler" && (
-                                      <div>
-                                        <div>{player.stats.wickets} wickets</div>
-                                        <div className="text-xs">Eco: {player.stats.economy} | Avg: {player.stats.average}</div>
-                                      </div>
-                                    )}
-                                    {player.role === "All-Rounder" && (
-                                      <div>
-                                        <div>{player.stats.runs} runs, {player.stats.wickets} wickets</div>
-                                        <div className="text-xs">Avg: {player.stats.average}</div>
-                                      </div>
-                                    )}
-                                    {player.role === "Wicket Keeper" && (
-                                      <div>
-                                        <div>{player.stats.runs} runs, {player.stats.dismissals} dismissals</div>
-                                        <div className="text-xs">Avg: {player.stats.average}</div>
-                                      </div>
-                                    )}
+                                  {player.category === "Batsman" && (
+                                    <div>
+                                    <div>{player.totalruns} runs</div>
+                                    <div className="text-xs">BF: {player.ballsfaced} | Innings: {player.inningsplayed}</div>
+                                    </div>
+                                  )}
+                                  {player.category === "Bowler" && (
+                                    <div>
+                                    <div>{player.wickets} wickets</div>
+                                    <div className="text-xs">Overs: {player.overbowled} | Runs Conceded: {player.runsconceded}</div>
+                                    </div>
+                                  )}
+                                  {player.category === "All-Rounder" && (
+                                    <div>
+                                    <div>{player.totalruns} runs, {player.wickets} wickets</div>
+                                    <div className="text-xs">Innings: {player.inningsplayed} | Overs: {player.overbowled}</div>
+                                    </div>
+                                  )}
+                                  {player.category === "Wicket Keeper" && (
+                                    <div>
+                                    <div>{player.totalruns} runs</div>
+                                    <div className="text-xs">Innings: {player.inningsplayed}</div>
+                                    </div>
+                                  )}
                                   </td>
                                 </tr>
-                              ))}
+                                ))}
                             </tbody>
                           </table>
                         </div>

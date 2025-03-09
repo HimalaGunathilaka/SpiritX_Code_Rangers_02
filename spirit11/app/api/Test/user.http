@@ -21,22 +21,46 @@ Content-Type: application/json
 
 ###
 
-### Add a team member by user ID
+### Add multiple team members by user ID
 PUT http://localhost:3000/api/user
 Content-Type: application/json
 
 {
   "userId": "67cc39310e8e5d2de616a75a",  
-  "playerId": "67cbc5535178249345daa9db" 
+  "playerIds": ["67cbc5535178249345daa9dd", "67cbc5535178249345daa9dc"],
+  "budget": 7500
+}
+###
+
+### Remove Multiple Team Members by User ID
+PATCH http://localhost:3000/api/user
+Content-Type: application/json
+
+{
+  "userId": "67cc39310e8e5d2de616a75a",
+  "playerIds": ["67cbc5535178249345daa9db", "67cbc5535178249345daa9df","67cbc5535178249345daa9dc","67cbc5535178249345daa9dd"],
+  "budget": 8000
 }
 
 ###
 
-### Remove a team member by user ID
-PATCH  http://localhost:3000/api/user
+GET http://localhost:3000/api/user?id=67cc39310e8e5d2de616a75a
+Content-Type: application/json
+
+
+### Get User Budget
+GET http://localhost:3000/api/userbudget?id=67cc39310e8e5d2de616a75a
+Content-Type: application/json
+
+### Update User Budget
+PATCH http://localhost:3000/api/userbudget
 Content-Type: application/json
 
 {
-  "userId": "67cc39310e8e5d2de616a75a",  
-  "playerId": "67cbc5535178249345daa9db"  
+  "userId": "67cc39310e8e5d2de616a75a",
+  "budget": 7500
 }
+
+### Get All Users
+GET http://localhost:3000/api/user/users
+Content-Type: application/json

@@ -6,9 +6,11 @@ interface PlayerCardProps {
   value: number;
   category: string;
   selected: boolean;
+  onAdd: () => void;
+  onRemove: () => void;
 }
 
-export function PlayerCard({ name, university, value, category, selected }: PlayerCardProps) {
+export function PlayerCard({ name, university, value, category, selected, onAdd, onRemove }: PlayerCardProps) {
   return (
     <div className={`bg-white border rounded-lg ${selected ? "border-green-500 border-2" : "border-gray-200"}`}>
       <div className="p-4">
@@ -34,6 +36,7 @@ export function PlayerCard({ name, university, value, category, selected }: Play
             </div>
 
             <button
+              onClick={selected ? onRemove : onAdd}
               className={`mt-4 md:mt-0 md:ml-4 px-4 py-2 rounded-md ${
                 selected 
                   ? "border border-red-500 text-red-500 hover:bg-red-50" 

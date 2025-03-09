@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { set } from "mongoose";
 
 interface Player {
   id: number;
@@ -23,120 +25,109 @@ interface Team {
 
 export default function Team() {
   const router = useRouter();
-  
+  const userid= '67cc39310e8e5d2de616a75a';
   // Mock data for team
   const [team, setTeam] = useState<Team>({
-    name: "Cricket Titans",
+    name: "",
     points: 0,
-    rank: 42,
-    captain: {
-      id: 1,
-      name: "Amal Perera",
-      role: "batsman",
-      team: "University of Moratuwa",
-      price: 1500000,
-      stats: "Avg: 52.1, SR: 142.8"
-    },
-    viceCaptain: {
-      id: 5,
-      name: "Nuwan Silva",
-      role: "bowler",
-      team: "University of Colombo",
-      price: 1100000,
-      stats: "Wickets: 18, Economy: 7.2"
-    },
-    players: [
-      {
-        id: 1,
-        name: "Amal Perera",
-        role: "batsman",
-        team: "University of Moratuwa",
-        price: 1500000,
-        stats: "Avg: 52.1, SR: 142.8"
-      },
-      {
-        id: 2,
-        name: "Dinesh Fernando",
-        role: "batsman",
-        team: "University of Peradeniya",
-        price: 950000,
-        stats: "Avg: 38.7, SR: 125.3"
-      },
-      {
-        id: 3,
-        name: "Kasun Rajapaksa",
-        role: "batsman",
-        team: "University of Colombo",
-        price: 1200000,
-        stats: "Avg: 45.2, SR: 138.5"
-      },
-      {
-        id: 4,
-        name: "Sunil Bandara",
-        role: "batsman",
-        team: "University of Kelaniya",
-        price: 800000,
-        stats: "Avg: 32.5, SR: 118.2"
-      },
-      {
-        id: 5,
-        name: "Nuwan Silva",
-        role: "bowler",
-        team: "University of Colombo",
-        price: 1100000,
-        stats: "Wickets: 18, Economy: 7.2"
-      },
-      {
-        id: 6,
-        name: "Lasith Kumara",
-        role: "bowler",
-        team: "University of Jaffna",
-        price: 1300000,
-        stats: "Wickets: 22, Economy: 6.8"
-      },
-      {
-        id: 7,
-        name: "Pradeep Jayawardena",
-        role: "bowler",
-        team: "University of Ruhuna",
-        price: 900000,
-        stats: "Wickets: 15, Economy: 7.5"
-      },
-      {
-        id: 8,
-        name: "Tharindu Mendis",
-        role: "bowler",
-        team: "University of Sri Jayewardenepura",
-        price: 850000,
-        stats: "Wickets: 14, Economy: 7.8"
-      },
-      {
-        id: 9,
-        name: "Chamara Jayasuriya",
-        role: "all-rounder",
-        team: "University of Ruhuna",
-        price: 1250000,
-        stats: "Avg: 28.5, Wickets: 15"
-      },
-      {
-        id: 10,
-        name: "Roshan Peiris",
-        role: "all-rounder",
-        team: "University of Kelaniya",
-        price: 1150000,
-        stats: "Avg: 26.8, Wickets: 12"
-      },
-      {
-        id: 11,
-        name: "Kusal Mendis",
-        role: "wicket-keeper",
-        team: "University of Sri Jayewardenepura",
-        price: 1050000,
-        stats: "Avg: 35.8, Dismissals: 24"
-      }
-    ]
+    rank: 0,
+    captain: { id: 0, name: "", role: "", team: "", price: 0, stats: "" },
+    viceCaptain: { id: 0, name: "", role: "", team: "", price: 0, stats: "" },
+    players: []
   });
 
+  const [deletedPlayers, setDeletedPlayers] = useState<number[]>([]);
+  const [balance,setbalnce] = useState<number>(0);
+
+  useEffect(() => {
+    async function fetchTeam() {
+      const response = await fetch(`http://localhost:3000/api/user?id=${userid}`, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      const players = data.team.map((player: any, index: number) => ({
+        id: player._id,
+        name: player.name,
+        role: player.category.toLowerCase(),
+        team: player.university,
+        price: parseFloat(player.value),
+        stats: `Runs: ${player.totalruns}, Wickets: ${player.wickets}`
+      }));
+      setTeam({
+        name: "Cricket Titans",
+        points: 0,
+        rank: 2,
+        captain: players[0],
+        viceCaptain: players[1],
+        players: players
+      });
+    }
+    fetchTeam();
+  }, []);
+ 
+
+  const handleRemovePlayers = async () => {
+    // Calculate the remaining budget after removing players
+    console.log(team.players);
+    console.log(deletedPlayers);
+   
+      
+    console.log('Deleted Players Price:', balance);
+    console.log(balance); 
+    const response = await fetch('http://localhost:3000/api/user', {
+      method: 'PATCH',
+      headers: {
+      'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+      userId: userid,
+      playerIds: deletedPlayers,
+      budget: balance
+      })
+    });
+
+    setbalnce(0);
+    const data = await response.json();
+    setDeletedPlayers([]);
+    // Update team state if needed based on response
+  };
+
+const handlereset = async () => {
+  const response = await fetch('http://localhost:3000/api/user?id=67cc39310e8e5d2de616a75a', {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  const data = await response.json();
+  const players = data.team.map((player: any, index: number) => ({
+    id: player._id,
+    name: player.name,
+    role: player.category.toLowerCase(),
+    team: player.university,
+    price: parseFloat(player.value),
+    stats: `Runs: ${player.totalruns}, Wickets: ${player.wickets}`
+  }));
+const [points, setPoints] = useState<number>(0);
+
+useEffect(() => {
+  setPoints(((totalValue/1000) -100)/9);
+  setTeam({
+    name: "Cricket Titans",
+    points: points,
+    rank: 2,
+    captain: players[0],
+    viceCaptain: players[1],
+    players: players
+  });
+  console.log("points",points);
+});
+
+
+  
+  setbalnce(0);
+};
   // Group players by role
   const batsmen = team.players.filter(player => player.role === "batsman");
   const bowlers = team.players.filter(player => player.role === "bowler");
@@ -144,7 +135,9 @@ export default function Team() {
   const wicketKeepers = team.players.filter(player => player.role === "wicket-keeper");
 
   // Calculate total team value
+  
   const totalValue = team.players.reduce((sum, player) => sum + player.price, 0);
+  const totalPoints = ((totalValue/1000) -100)/9;;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -208,6 +201,7 @@ export default function Team() {
             </div>
           </div>
         </div>
+        
 
         {/* Main content */}
         <div className="md:pl-64 flex flex-col flex-1">
@@ -250,7 +244,7 @@ export default function Team() {
                         Total Points
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        {team.points}
+                        {totalPoints.toFixed(2)}
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -291,6 +285,28 @@ export default function Team() {
               <div className="mt-8">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg leading-6 font-medium text-gray-900">Team Players</h2>
+                  <div className="flex space-x-2">
+                  <button
+                    type="button"
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    onClick={() => {
+                    // Save team logic here'
+                    handleRemovePlayers();
+                    }}
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                    onClick={() => {
+                    // Reset team logic here
+                    handlereset();
+                    }}
+                  >
+                    Reset
+                  </button>
+                  </div>
                 </div>
                 <div className="mt-2 overflow-hidden shadow sm:rounded-md">
                   <ul className="divide-y divide-gray-200 bg-white">
@@ -334,15 +350,22 @@ export default function Team() {
                           <span className="text-sm font-medium text-gray-900 mr-2">
                             Rs.{player.price.toLocaleString()}
                           </span>
-                          <button
+                            <button
                             className="px-2 py-1 text-white bg-red-700 hover:bg-red-500 rounded"
-                            onClick={() => setTeam(prevTeam => ({
-                            ...prevTeam,
-                            players: prevTeam.players.filter(p => p.id !== player.id)
-                            }))}
-                          >
+                            onClick={() => {
+                              setTeam(prevTeam => ({
+                              ...prevTeam,
+                              players: prevTeam.players.filter(p => p.id !== player.id)
+                              }));
+                              // console.log("player.id");
+                              // console.log(player.price);
+                              setbalnce(balance + player.price);
+                              // console.log("b",balance);
+                              setDeletedPlayers(prevDeleted => [...prevDeleted, player.id]);
+                            }}
+                            >
                             Remove
-                          </button>
+                            </button>
                           </div>
                         </div>
                         <div className="mt-2 text-sm text-gray-500">
@@ -363,38 +386,3 @@ export default function Team() {
   );
 }
 
-interface PlayerBubbleProps {
-  player: Player;
-  isCaptain: boolean;
-  isViceCaptain: boolean;
-}
-
-function PlayerBubble({ player, isCaptain, isViceCaptain }: PlayerBubbleProps) {
-  return (
-    <div className="relative">
-      <div className={`h-14 w-14 rounded-full ${
-        player.role === 'batsman' ? 'bg-blue-100 border-blue-500' :
-        player.role === 'bowler' ? 'bg-green-100 border-green-500' :
-        player.role === 'all-rounder' ? 'bg-purple-100 border-purple-500' :
-        'bg-yellow-100 border-yellow-500'
-      } border-2 flex items-center justify-center`}>
-        <span className="text-xs font-medium text-center">
-          {player.name.split(' ').map(n => n[0]).join('')}
-        </span>
-      </div>
-      {isCaptain && (
-        <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-yellow-400 border border-white flex items-center justify-center">
-          <span className="text-xs font-bold text-white">C</span>
-        </div>
-      )}
-      {isViceCaptain && (
-        <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-blue-500 border border-white flex items-center justify-center">
-          <span className="text-xs font-bold text-white">V</span>
-        </div>
-      )}
-      <div className="mt-1 text-xs text-center font-medium truncate w-14">
-        {player.name.split(' ')[0]}
-      </div>
-    </div>
-  );
-}

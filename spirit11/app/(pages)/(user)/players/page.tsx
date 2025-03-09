@@ -1,12 +1,26 @@
 'use client';
 import { JSX, useState, useEffect } from 'react';
-import PlayerCard, { PlayerInfo } from '@/components/player-card';
+import PlayerCard from '@/components/player-card';
 import { Search, Filter, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
 
-
+interface PlayerInfo {
+  _id: string;
+  name: string;
+  university: string;
+  role: string;
+  price: number;
+  category: string;
+  totalruns: number;
+  ballsfaced: number;
+  inningsplayed: number;
+  wickets: number;
+  matches: number;
+  overbowled: number;
+  runsconceded: number;
+  available: boolean;
+}
 
 export default function PlayerSearch() {
-  // Mock data for players
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +37,7 @@ export default function PlayerSearch() {
   useEffect(() => {
     async function fetchPlayers() {
       try {
-        const response = await fetch('http://localhost:3000/api/player', {
+        const response = await fetch('api/player', {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -37,9 +51,7 @@ export default function PlayerSearch() {
 
     fetchPlayers();
   }, []);
-useEffect(() => {
-  console.log(players);
-}, [players]);
+
   // Get unique universities for filter dropdown
   const universities = [...new Set(players.map(player => player.university))];
   
@@ -73,14 +85,6 @@ useEffect(() => {
     } else if (sortBy === 'price') {
       valueA = a.price;
       valueB = b.price;
-    } 
-    else if (sortBy === 'batAverage') {
-      valueA = a.stats.batAverage;
-      valueB = b.stats.batAverage;
-    } else if (sortBy === 'economy') {
-      // For players without economy (like batsmen), use a high value for sorting
-      valueA = a.stats.economy || 999;
-      valueB = b.stats.economy || 999;
     } else {
       return 0;
     }
@@ -129,6 +133,7 @@ useEffect(() => {
   };
 
   return (
+    
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white border-b p-4 sticky top-0 z-10">
         <div className="container mx-auto">
@@ -143,7 +148,10 @@ useEffect(() => {
         </div>
       </header>
 
+      
+
       <main className="container mx-auto p-4 md:p-6">
+        
         <div className="bg-white rounded-lg shadow p-6">
           <div className="pb-3">
             <h2 className="text-xl font-semibold">Search Players</h2>
@@ -165,13 +173,6 @@ useEffect(() => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
-            <button 
-              className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-            </button>
           </div>
           
           {/* Advanced Filters */}
@@ -275,7 +276,7 @@ useEffect(() => {
             {currentPlayers.length > 0 ? (
               currentPlayers.map(player => (
                 <PlayerCard
-                  key={player.id}
+                  key={player._id} // Add the key prop here
                   player={player}
                 />
               ))
@@ -301,7 +302,7 @@ useEffect(() => {
                 >
                   <span className="sr-only">Previous</span>
                   <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </button>
                 
@@ -342,4 +343,3 @@ useEffect(() => {
     </div>
   );
 }
-
