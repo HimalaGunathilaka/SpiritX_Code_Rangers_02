@@ -1,9 +1,0 @@
-{
-  "/(pages)/(user)/leaderboard/page": "app/(pages)/(user)/leaderboard/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/player/route": "app/api/player/route.js",
-  "/(pages)/(user)/team/page": "app/(pages)/(user)/team/page.js",
-  "/(pages)/(user)/user/page": "app/(pages)/(user)/user/page.js",
-  "/api/user/route": "app/api/user/route.js",
-  "/(pages)/(user)/players/page": "app/(pages)/(user)/players/page.js"
-}
