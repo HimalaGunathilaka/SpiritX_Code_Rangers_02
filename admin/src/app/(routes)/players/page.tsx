@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import Modal from '@/components/Modal';
 import AddNewPlayer from '@/components/AddNewPlayer';
+import EditPlayer from '@/components/EditPlayer';
 import Link from 'next/link';
+import { set } from 'mongoose';
 
 interface Player {
   _id: string;
@@ -24,6 +26,12 @@ export default function PlayersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [modalOption, setModalOption] = useState<string | null>(null);
+  const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
+
+  const [notification, setNotification] = useState<string | null>(null);
+  const [failnotification, setFailNotification] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPlayers();
@@ -46,27 +54,44 @@ export default function PlayersPage() {
   };
 
   const handleDelete = async (id: string) => {
+
+    
     if (!confirm('Are you sure you want to delete this player?')) {
       return;
     }
+
+    setLoading(true);
 
     try {
       const response = await fetch(`/api/players/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
+        setFailNotification('Failed to delete player');
+        setTimeout(() => {
+          setFailNotification(null);
+        }, 5000); // Clear the notification after 5 seconds
         throw new Error('Failed to delete player');
       }
+      
+      setNotification('Player deleted successfully!');
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000); // Clear the notification after 3 seconds
+
       await fetchPlayers();
     } catch (err) {
       console.error(err);
-      alert('Failed to delete player');
+      // alert('Failed to delete player');
+    } finally {
+      setLoading(false);
     }
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-80 text-lg font-medium text-gray-700 bg-gray-50 rounded-xl shadow-inner">
+
         <div className="flex flex-col items-center">
           <svg
             className="animate-spin h-12 w-12 text-green-600 mb-4"
@@ -106,7 +131,22 @@ export default function PlayersPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 min-h-screen">
+    <div className="max-w-6xl mx-auto min-h-screen">
+      
+      {failnotification && (
+        <div className="fixed top-12 right-12 mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg shadow-lg transition-transform transform translate-x-0 ease-in-out duration-300">
+          <img src="/x.svg" alt="cross" className="h-5 w-5 inline-block mr-2" />
+          {failnotification}
+        </div>
+      )}
+      
+      {notification && (
+        <div className="fixed top-12 right-12 mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg shadow-lg transition-transform transform translate-x-0 ease-in-out duration-300">
+          <img src="/check.svg" alt="checkmark" className="h-5 w-5 inline-block mr-2" />
+          {notification}
+        </div>
+      )}
+      
       <div className="sm:flex sm:items-center sm:justify-between mb-10 pb-6 border-b border-gray-200">
         <div>
           <h1 className="text-3xl font-bold text-gray-800 flex items-center">
@@ -118,7 +158,7 @@ export default function PlayersPage() {
         </div>
         <div className="mt-5 sm:mt-0">
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => {setIsModalOpen(true); setModalOption('add')}}
             className="inline-flex items-center rounded-md bg-green-600 px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-green-500 transition-all duration-200"
           >
             Add New Player
@@ -215,12 +255,12 @@ export default function PlayersPage() {
                         </td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-8 text-right text-sm font-medium">
                           <div className="flex justify-end space-x-3">
-                            <Link
-                              href={`/players/${player._id}`}
-                              className="inline-flex items-center px-3 py-1 rounded-md bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-900 transition-colors duration-150"
+                            <button
+                              onClick={() => {setIsModalOpen(true); setModalOption('edit'); setEditingPlayer(player);}}
+                              className="inline-flex items-center px-3 py-1 rounded-md bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-900 transition-colors duration-150"
                             >
                               Edit
-                            </Link>
+                            </button>
                             <button
                               className="inline-flex items-center px-3 py-1 rounded-md bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition-colors duration-150"
                               onClick={() => handleDelete(player._id)}
@@ -248,8 +288,13 @@ export default function PlayersPage() {
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <AddNewPlayer onClose={() => setIsModalOpen(false)} />
+      <Modal isOpen={isModalOpen} onClose={() => {setIsModalOpen(false); fetchPlayers();}}>
+        {modalOption === 'edit' && editingPlayer && 
+          <EditPlayer player={editingPlayer} onClose={() => {setIsModalOpen(false); fetchPlayers();}} />
+        }
+        {modalOption === 'add' &&
+          <AddNewPlayer onClose={() => {setIsModalOpen(false); fetchPlayers(); } }/>
+        }
       </Modal>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { set } from 'mongoose';
 
 interface Message {
     role: 'user' | 'bot';
@@ -10,6 +11,7 @@ interface Message {
 
 export default function BotPage() {
     const [input, setInput] = useState('');
+    const [threadId, setThreadId] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>([
         {
             role: 'bot',
@@ -24,15 +26,18 @@ export default function BotPage() {
         setMessages([...messages, { role: 'user', content: input }]);
         console.log(input);
         // Send request to the bot API
-        const response = await fetch('http://localhost:3000/api/bot', {
+        const response = await fetch(
+          threadId ? `http://localhost:3000/api/chat/${threadId}/` : 'http://localhost:3000/api/chat/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ text: input })
+            body: JSON.stringify({ message: input })
         });
-
+        console.log(response);
         const data = await response.json();
+        setThreadId(data.threadId);
+        console.log(threadId)
         console.log(data);
 
         // Add bot response
@@ -53,7 +58,7 @@ export default function BotPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-              <h1 className="text-xl font-bold">Spiriter AI Assistant</h1>
+              {/* <h1 className="text-xl font-bold">Spiriter AI Assistant</h1> */}
               <h1 className="text-xl font-bold text-black">Spiriter AI Assistant</h1>
 
             </div>

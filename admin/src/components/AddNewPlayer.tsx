@@ -18,6 +18,8 @@ export default function AddNewPlayer({ onClose }: AddNewPlayerProps) {
     available: true,
   });
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -29,6 +31,7 @@ export default function AddNewPlayer({ onClose }: AddNewPlayerProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       const response = await fetch('/api/players', {
         method: 'POST',
@@ -39,6 +42,11 @@ export default function AddNewPlayer({ onClose }: AddNewPlayerProps) {
       });
       console.log('Response:', response);
       if (!response.ok) {
+        setErrorMessage('Failed to add player');
+        setTimeout(() => {
+            setErrorMessage('');
+        }
+        , 5000);
         throw new Error('Failed to add player');
       }
       setSuccessMessage('Player added successfully!');
@@ -48,22 +56,30 @@ export default function AddNewPlayer({ onClose }: AddNewPlayerProps) {
       }, 3000); // Close the modal after 3 seconds
     } catch (error) {
       console.error(error);
-      alert('Failed to add player');
+      // alert('Failed to add player');
+    } finally {
+        setSubmitting(false);
     }
   };
 
   return (
     <div className="p-6 bg-white rounded-lg">
     
-      <h2 className="text-2xl font-bold text-green-900 mb-6">Add New Player</h2>
-      <div className="absolute top-4 right-4">
-      {successMessage && (
-        <div className="mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg">
-        <img src="/check.svg" alt="checkmark" className="h-4 w-4 inline-block mr-2" />
-        {successMessage}
+    <h2 className="text-2xl font-bold text-green-900 mb-6">Add New Player</h2>
+    
+    {errorMessage && (
+        <div className="fixed top-12 right-12 mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg shadow-lg transition-transform transform translate-x-0 ease-in-out duration-300">
+            <img src="/x.svg" alt="cross" className="h-5 w-5 inline-block mr-2" />
+            {errorMessage}
         </div>
-      )}
-      </div>
+    )}
+    
+    {successMessage && (
+    <div className="fixed top-12 right-12 mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg shadow-lg transition-transform transform translate-x-0 ease-in-out duration-300">
+      <img src="/check.svg" alt="checkmark" className="h-5 w-5 inline-block mr-2" />
+      {successMessage}
+    </div>
+    )}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Name</label>
@@ -195,7 +211,8 @@ export default function AddNewPlayer({ onClose }: AddNewPlayerProps) {
           </button>
           <button
             type="submit"
-            className="inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            className="inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300"
+            disabled={submitting}
           >
             Add Player
           </button>

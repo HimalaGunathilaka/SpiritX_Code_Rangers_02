@@ -4,6 +4,7 @@ import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { set } from "mongoose";
+import { useSession } from 'next-auth/react';
 
 interface Player {
   id: number;
@@ -25,8 +26,15 @@ interface Team {
 
 export default function Team() {
   const router = useRouter();
-  const userid= '67cc39310e8e5d2de616a75a';
-  // Mock data for team
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [team, setTeam] = useState<Team>({
     name: "",
     points: 0,
@@ -37,36 +45,72 @@ export default function Team() {
   });
 
   const [deletedPlayers, setDeletedPlayers] = useState<number[]>([]);
-  const [balance,setbalnce] = useState<number>(0);
+  const [balance, setBalance] = useState<number>(0);
 
   useEffect(() => {
     async function fetchTeam() {
-      const response = await fetch(`http://localhost:3000/api/user?id=${userid}`, {
-        headers: {
-          'Content-Type': 'application/json'
+      if (!session?.user?.id) return;
+      
+      try {
+        setIsLoading(true);
+        const response = await fetch(`/api/user/${session.user.id}`, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch team data');
         }
-      });
-      const data = await response.json();
-      const players = data.team.map((player: any, index: number) => ({
-        id: player._id,
-        name: player.name,
-        role: player.category.toLowerCase(),
-        team: player.university,
-        price: parseFloat(player.value),
-        stats: `Runs: ${player.totalruns}, Wickets: ${player.wickets}`
-      }));
-      setTeam({
-        name: "Cricket Titans",
-        points: 0,
-        rank: 2,
-        captain: players[0],
-        viceCaptain: players[1],
-        players: players
-      });
+
+        const data = await response.json();
+        const players = data.team?.map((player: any) => ({
+          id: player._id || 0,
+          name: player.name || '',
+          role: (player.category || '').toLowerCase(),
+          team: player.university || '',
+          price: parseFloat(player.value || 0),
+          stats: `Runs: ${player.totalruns || 0}, Wickets: ${player.wickets || 0}`
+        })) || [];
+
+        setTeam({
+          name: data.teamname || "My Team",
+          points: data.points || 0,
+          rank: 2,
+          captain: players[0] || { id: 0, name: "", role: "", team: "", price: 0, stats: "" },
+          viceCaptain: players[1] || { id: 0, name: "", role: "", team: "", price: 0, stats: "" },
+          players: players
+        });
+      } catch (error) {
+        console.error('Error fetching team:', error);
+        setError(error instanceof Error ? error.message : 'Failed to load team data');
+      } finally {
+        setIsLoading(false);
+      }
     }
-    fetchTeam();
-  }, []);
- 
+
+    if (status === 'authenticated') {
+      fetchTeam();
+    }
+  }, [session, status]);
+
+  // Show loading state
+  if (isLoading || status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-xl text-gray-600">Loading team data...</div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-xl text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
 
   const handleRemovePlayers = async () => {
     // Calculate the remaining budget after removing players
@@ -82,20 +126,20 @@ export default function Team() {
       'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-      userId: userid,
+      userId: session?.user?.id,
       playerIds: deletedPlayers,
       budget: balance
       })
     });
 
-    setbalnce(0);
+    setBalance(0);
     const data = await response.json();
     setDeletedPlayers([]);
     // Update team state if needed based on response
   };
 
 const handlereset = async () => {
-  const response = await fetch('http://localhost:3000/api/user?id=67cc39310e8e5d2de616a75a', {
+  const response = await fetch('http://localhost:3000/api/user?id=' + session?.user?.id, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -126,7 +170,7 @@ useEffect(() => {
 
 
   
-  setbalnce(0);
+  setBalance(0);
 };
   // Group players by role
   const batsmen = team.players.filter(player => player.role === "batsman");
@@ -359,7 +403,7 @@ useEffect(() => {
                               }));
                               // console.log("player.id");
                               // console.log(player.price);
-                              setbalnce(balance + player.price);
+                              setBalance(balance + player.price);
                               // console.log("b",balance);
                               setDeletedPlayers(prevDeleted => [...prevDeleted, player.id]);
                             }}

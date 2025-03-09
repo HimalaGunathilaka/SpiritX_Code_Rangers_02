@@ -1,0 +1,7 @@
+
+POST http://localhost:3000/api/chat/
+Content-Type: application/json
+
+{
+    "message": "list down all the batsmen"
+}
