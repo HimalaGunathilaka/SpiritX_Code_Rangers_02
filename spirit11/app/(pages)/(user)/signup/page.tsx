@@ -11,21 +11,19 @@ import { signIn } from "next-auth/react";
 import { toast } from 'react-hot-toast';
 
 interface FormData {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
   username: string;
   password: string;
-  confirmPassword: string;
+  teamname: string;
 }
 
 interface ValidationErrors {
-  firstName?: string;
-  lastName?: string;
+  name?: string;
   email?: string;
   username?: string;
   password?: string;
-  confirmPassword?: string;
+  teamname?: string;
 }
 
 interface PasswordStrength {
@@ -43,12 +41,11 @@ const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     username: '',
     password: '',
-    confirmPassword: '',
+    teamname: ''
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -101,12 +98,8 @@ const SignupPage = () => {
   const validateForm = (data: FormData) => {
     const newErrors: ValidationErrors = {};
 
-    if (!data.firstName) {
-      newErrors.firstName = 'First name is required';
-    }
-
-    if (!data.lastName) {
-      newErrors.lastName = 'Last name is required';
+    if (!data.name) {
+      newErrors.name = 'Name is required';
     }
 
     if (!data.email) {
@@ -117,8 +110,8 @@ const SignupPage = () => {
 
     if (!data.username) {
       newErrors.username = 'Username is required';
-    } else if (data.username.length < 8) {
-      newErrors.username = 'Username must be at least 8 characters long';
+    } else if (data.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters long';
     }
 
     if (!data.password) {
@@ -133,10 +126,8 @@ const SignupPage = () => {
       newErrors.password = 'Password must contain at least one special character';
     }
 
-    if (!data.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (data.confirmPassword !== data.password) {
-      newErrors.confirmPassword = 'Passwords do not match';
+    if (!data.teamname) {
+      newErrors.teamname = 'Team name is required';
     }
 
     setErrors(newErrors);
@@ -167,11 +158,10 @@ const SignupPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          name: formData.name,
           email: formData.email,
-          username: formData.username,
           password: formData.password,
+          teamname: formData.teamname,
         }),
       });
 
@@ -189,12 +179,12 @@ const SignupPage = () => {
           return;
         }
         
-        if (data.message === 'Username already taken') {
+        if (data.message === 'Team name already taken') {
           setErrors(prev => ({
             ...prev,
-            username: 'This username is already taken. Please choose another one.'
+            teamname: 'This team name is already taken. Please choose another one.'
           }));
-          toast.error('Username already taken');
+          toast.error('Team name already taken');
           return;
         }
 
@@ -239,17 +229,17 @@ const SignupPage = () => {
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 ${
       isDarkMode 
-        ? 'bg-gradient-to-r from-blue-900 via-blue-800 to-cyan-900'
-        : 'bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400'
+        ? 'bg-gradient-to-r from-green-900 via-green-800 to-emerald-900'
+        : 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400'
     }`}>
       <div className="flex w-full max-w-6xl bg-white rounded-lg shadow-xl overflow-hidden">
         {/* Left side - Image */}
         <div className={`hidden lg:block lg:w-1/2 relative ${
-          isDarkMode ? 'bg-gray-900' : 'bg-blue-50'
+          isDarkMode ? 'bg-gray-900' : 'bg-green-50'
         }`}>
           <div className="relative h-full flex flex-col items-center justify-center p-12">
             {/* Decorative elements */}
-            <div className="absolute top-10 left-10 w-20 h-20 bg-blue-400 rounded-full opacity-20"></div>
+            <div className="absolute top-10 left-10 w-20 h-20 bg-green-400 rounded-full opacity-20"></div>
             <div className="absolute bottom-10 right-10 w-32 h-32 bg-teal-400 rounded-full opacity-20"></div>
             
             {/* Main image */}
@@ -293,7 +283,7 @@ const SignupPage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
             ) : (
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
             )}
@@ -353,77 +343,27 @@ const SignupPage = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="firstName" className={`block text-sm font-medium ${
-                  isDarkMode ? 'text-gray-200' : 'text-gray-700'
-                }`}>
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none ${
-                    isDarkMode
-                      ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500'
-                      : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                  }`}
-                  placeholder="First Name"
-                />
-                {errors.firstName && (
-                  <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="lastName" className={`block text-sm font-medium ${
-                  isDarkMode ? 'text-gray-200' : 'text-gray-700'
-                }`}>
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none ${
-                    isDarkMode
-                      ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500'
-                      : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                  }`}
-                  placeholder="Last Name"
-                />
-                {errors.lastName && (
-                  <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>
-                )}
-              </div>
-            </div>
-
             <div>
-              <label htmlFor="email" className={`block text-sm font-medium ${
+              <label htmlFor="name" className={`block text-sm font-medium ${
                 isDarkMode ? 'text-gray-200' : 'text-gray-700'
               }`}>
-                Email
+                Name
               </label>
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleInputChange}
                 className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none ${
                   isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500'
-                    : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                    ? 'bg-gray-700 border-gray-600 text-white focus:ring-green-500 focus:border-green-500'
+                    : 'bg-white border-gray-300 focus:ring-green-500 focus:border-green-500'
                 }`}
-                placeholder="Email address"
+                placeholder="Enter your name"
               />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-500">{errors.name}</p>
               )}
             </div>
 
@@ -441,13 +381,61 @@ const SignupPage = () => {
                 onChange={handleInputChange}
                 className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none ${
                   isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500'
-                    : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                    ? 'bg-gray-700 border-gray-600 text-white focus:ring-green-500 focus:border-green-500'
+                    : 'bg-white border-gray-300 focus:ring-green-500 focus:border-green-500'
                 }`}
-                placeholder="Username"
+                placeholder="Choose a username"
               />
               {errors.username && (
                 <p className="mt-1 text-sm text-red-500">{errors.username}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="email" className={`block text-sm font-medium ${
+                isDarkMode ? 'text-gray-200' : 'text-gray-700'
+              }`}>
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white focus:ring-green-500 focus:border-green-500'
+                    : 'bg-white border-gray-300 focus:ring-green-500 focus:border-green-500'
+                }`}
+                placeholder="Enter your email"
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="teamname" className={`block text-sm font-medium ${
+                isDarkMode ? 'text-gray-200' : 'text-gray-700'
+              }`}>
+                Team Name
+              </label>
+              <input
+                type="text"
+                id="teamname"
+                name="teamname"
+                value={formData.teamname}
+                onChange={handleInputChange}
+                className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white focus:ring-green-500 focus:border-green-500'
+                    : 'bg-white border-gray-300 focus:ring-green-500 focus:border-green-500'
+                }`}
+                placeholder="Enter team name"
+              />
+              {errors.teamname && (
+                <p className="mt-1 text-sm text-red-500">{errors.teamname}</p>
               )}
             </div>
 
@@ -457,149 +445,33 @@ const SignupPage = () => {
               }`}>
                 Password
               </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none ${
-                    isDarkMode
-                      ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500'
-                      : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                  }`}
-                  placeholder="Create password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  } hover:opacity-80`}
-                >
-                  {showPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
-                  )}
-                </button>
-              </div>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white focus:ring-green-500 focus:border-green-500'
+                    : 'bg-white border-gray-300 focus:ring-green-500 focus:border-green-500'
+                }`}
+                placeholder="Enter your password"
+              />
               {errors.password && (
                 <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-              )}
-              
-              {/* Password strength indicator */}
-              <div className="mt-2">
-                <div className={`h-2 w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full overflow-hidden`}>
-                  <div
-                    className={`h-full transition-all duration-300 ${getPasswordStrengthColor()}`}
-                    style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
-                  />
-                </div>
-                <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
-                  <div className={`flex items-center ${
-                    passwordStrength.hasLower 
-                      ? (isDarkMode ? 'text-green-400' : 'text-green-600')
-                      : (isDarkMode ? 'text-gray-500' : 'text-gray-400')
-                  }`}>
-                    <span>✓ Lowercase letter</span>
-                  </div>
-                  <div className={`flex items-center ${
-                    passwordStrength.hasUpper
-                      ? (isDarkMode ? 'text-green-400' : 'text-green-600')
-                      : (isDarkMode ? 'text-gray-500' : 'text-gray-400')
-                  }`}>
-                    <span>✓ Uppercase letter</span>
-                  </div>
-                  <div className={`flex items-center ${
-                    passwordStrength.hasNumber
-                      ? (isDarkMode ? 'text-green-400' : 'text-green-600')
-                      : (isDarkMode ? 'text-gray-500' : 'text-gray-400')
-                  }`}>
-                    <span>✓ Number</span>
-                  </div>
-                  <div className={`flex items-center ${
-                    passwordStrength.hasSpecial
-                      ? (isDarkMode ? 'text-green-400' : 'text-green-600')
-                      : (isDarkMode ? 'text-gray-500' : 'text-gray-400')
-                  }`}>
-                    <span>✓ Special character</span>
-                  </div>
-                  <div className={`flex items-center ${
-                    passwordStrength.isLongEnough
-                      ? (isDarkMode ? 'text-green-400' : 'text-green-600')
-                      : (isDarkMode ? 'text-gray-500' : 'text-gray-400')
-                  }`}>
-                    <span>✓ 8+ characters</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="confirmPassword" className={`block text-sm font-medium ${
-                isDarkMode ? 'text-gray-200' : 'text-gray-700'
-              }`}>
-                Confirm Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none ${
-                    isDarkMode
-                      ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500'
-                      : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                  }`}
-                  placeholder="Confirm password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  } hover:opacity-80`}
-                >
-                  {showConfirmPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>
               )}
             </div>
 
             <button
               type="submit"
-              disabled={isLoading || Object.keys(errors).length > 0}
               className={`w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${
                 isDarkMode
-                  ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
-                  : 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-400'
-              } ${
-                isLoading || Object.keys(errors).length > 0
-                  ? 'opacity-50 cursor-not-allowed'
-                  : ''
+                  ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                  : 'bg-green-500 hover:bg-green-600 focus:ring-green-400'
               }`}
             >
-              {isLoading ? 'Creating Account...' : 'Sign Up'}
+              Sign Up
             </button>
           </form>
 
@@ -609,8 +481,8 @@ const SignupPage = () => {
             Already have an account?{' '}
             <a href="/login" className={`${
               isDarkMode
-                ? 'text-blue-400 hover:text-blue-300'
-                : 'text-blue-600 hover:text-blue-500'
+                ? 'text-green-400 hover:text-green-300'
+                : 'text-green-600 hover:text-green-500'
             }`}>
               Sign in
             </a>

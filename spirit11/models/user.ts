@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  email: {
+    type: String,
+    required: true,
+  },
   teamname: {
     type: String,
     required: true,

@@ -41,30 +41,29 @@ const options: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials: Credentials | undefined) {
-        await connectMongo();
-        const user = await User.findOne({ username: credentials?.username }) as UserType | null;
-
-        if (!user) {
-          throw new Error('No user found.');
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error('Please provide all required fields');
         }
 
-        if (user && credentials?.password) {
-          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
-          if (isPasswordValid) {
-            return {
-              id: user._id.toString(),
-              email: user.email,
-              username: user.username,
-              role: user.role,
-              firstName: user.firstName,
-              lastName: user.lastName,
-            };
-          }
+        await connectMongo();
 
+        const user = await User.findOne({ username: credentials.username });
+        if (!user) {
+          throw new Error('No user found with this username');
+        }
+
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) {
           throw new Error('Invalid password');
         }
 
-        throw new Error('Invalid username or password');
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          username: user.username,
+          teamname: user.teamname
+        };
       },
     }),
   ],
@@ -74,19 +73,15 @@ const options: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as unknown as UserType).role;
-        token.name = `${(user as unknown as UserType).firstName} ${(user as unknown as UserType).lastName}`;
-        token.email = (user as unknown as UserType).email;
-        token.username = (user as unknown as UserType).username;
+        token.username = user.username;
+        token.teamname = user.teamname;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        //session.user.role = token.role;
-        session.user.name = token.name;
-        session.user.email = token.email;
-        session.user.username = token.username as string;
+      if (token) {
+        session.user.username = token.username;
+        session.user.teamname = token.teamname;
       }
       return session;
     },
