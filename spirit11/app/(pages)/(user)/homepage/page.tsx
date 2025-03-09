@@ -39,11 +39,11 @@ export default function Home() {
               </div>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
-              <Link href="#" className="text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
+              <Link href="/login" className="text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
                 Sign In
               </Link>
               <Link
-                href="#"
+                href="/signup"
                 className="bg-green-600 text-white hover:bg-green-700 px-4 py-2 rounded-md text-sm font-medium"
               >
                 Register
