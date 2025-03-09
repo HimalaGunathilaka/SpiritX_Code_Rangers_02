@@ -14,6 +14,7 @@
 /coverage
 
 # next.js
+/.next/
 .next/build
 /out/
 Code_Rangers_02\spirit11\.next

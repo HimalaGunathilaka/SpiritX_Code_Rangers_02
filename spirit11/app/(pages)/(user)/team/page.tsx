@@ -197,7 +197,7 @@ useEffect(() => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
               </button>
-              <h1 className="text-xl font-bold">Dashboard</h1>
+              <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
             </div>
             <div className="flex items-center space-x-2">
               <button className="p-2 rounded-full hover:bg-gray-100">
