@@ -60,3 +60,7 @@ Content-Type: application/json
   "userId": "67cc39310e8e5d2de616a75a",
   "budget": 7500
 }
+
+### Get All Users
+GET http://localhost:3000/api/user/users
+Content-Type: application/json
