@@ -145,9 +145,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - MongoDB team for the database
 - All contributors and supporters of the project
 
-## 📞 Contact
 
-For any queries or support, please reach out to [your-email@example.com]
-
----
 Made with ❤️ for SpiritX Competition
