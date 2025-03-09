@@ -77,6 +77,7 @@ A fantasy cricket platform for university cricket tournaments built with Next.js
    ```
 
 4. Run the development server:
+   Run admin, spirits, and bot server separately.
    ```bash
    npm run dev
    ```
