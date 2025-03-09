@@ -390,7 +390,7 @@ export default function Dashboard() {
                         <div>
                           <h4 className="text-sm font-medium text-gray-500 mb-2">Budget Allocation</h4>
                           <div className="bg-gray-50 p-4 rounded-md">
-                            <div className="flex justify-between text-sm mb-1">
+                            <div className="flex justify-between text-sm mb-1 text-gray-900">
                                 <span>Rs.{totalValue} / Rs.{((userData?.budget ?? 0) + totalValue).toLocaleString()}</span>
                               <span>{Math.round((totalValue/ ((userData?.budget ?? 0) + totalValue)) * 100)}% used</span>
                             </div>
@@ -506,11 +506,11 @@ export default function Dashboard() {
                     <div>
                       <div className="mb-6">
                         <h3 className="text-lg font-medium text-gray-900">Select Your Team</h3>
-                        <p className="mt-1 text-sm text-gray-500">Choose players for upcoming matches</p>
+                        <p className="mt-1 text-sm text-gray-900">Choose players for upcoming matches</p>
                       </div>
                       
                       <div className="mb-6">
-                        <h4 className="text-sm font-medium text-gray-500 mb-2">Upcoming Matches</h4>
+                        <h4 className="text-sm font-medium text-gray-900 mb-2">Upcoming Matches</h4>
                         <div className="space-y-4">
                           {upcomingMatches.map(match => (
                             <div key={match.id} className="bg-gray-50 p-4 rounded-md">
@@ -521,13 +521,13 @@ export default function Dashboard() {
                                       {match.team1.split(' ').map(word => word[0]).join('')}
                                     </div>
                                     <span className="mx-2 text-sm">vs</span>
-                                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 text-xs font-semibold">
+                                    <div className="w-8 h-8 rounfded-full bg-green-100 flex items-center justify-center text-green-700 text-xs font-semibold">
                                       {match.team2.split(' ').map(word => word[0]).join('')}
                                     </div>
                                   </div>
                                   <div>
                                     <p className="text-sm font-medium">{match.team1} vs {match.team2}</p>
-                                    <p className="text-xs text-gray-500">{match.venue}</p>
+                                    <p className="text-xs text-gray-900">{match.venue}</p>
                                   </div>
                                 </div>
                                 <div>

@@ -167,11 +167,11 @@ export default function CreateTeam() {
               >
                 <ArrowLeft className="h-5 w-5" />
               </button>
-              <h1 className="text-xl font-bold">Create Your Team</h1>
+              <h1 className="text-xl font-bold text-gray-900">Create Your Team</h1>
             </div>
             <div className="flex items-center space-x-4">
               <div className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium flex items-center">
-                <DollarSign className="h-4 w-4 mr-1" />
+                <DollarSign className="h-4 w-4 mr-1 text-gray-900" />
                 Budget: ${remainingBudget.toFixed(2)} / ${budget.toFixed(2)}
               </div>
                 <button 
@@ -191,7 +191,7 @@ export default function CreateTeam() {
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-lg shadow p-6">
               <div className="pb-3">
-                <h2 className="text-xl font-semibold">Select Players</h2>
+                <h2 className="text-xl font-semibold text-gray-900">Select Players</h2>
                 <p className="text-sm text-gray-500">
                   Choose 11 players within your budget to create your team
                 </p>
@@ -211,7 +211,7 @@ export default function CreateTeam() {
               </div>
 
               <div>
-                <div className="flex border-b mb-6">
+                <div className="flex border-b mb-6 text-gray-900">
                   <button
                     className={`py-2 px-4 text-center focus:outline-none border-b-2 ${
                       selectedCategory === "All"
@@ -266,7 +266,7 @@ export default function CreateTeam() {
                   </button>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 text-gray-900">
                   {currentPlayers.map((player) => (
                     <PlayerCard
                       key={player._id}
@@ -306,7 +306,7 @@ export default function CreateTeam() {
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow p-6">
               <div className="pb-3">
-                <h2 className="text-xl font-semibold">Your Team</h2>
+                <h2 className="text-xl font-semibold text-gray-900">Your Team</h2>
                 <p className="text-sm text-gray-500">
                   Selected players ({selectedPlayers.length}/11)
                 </p>
@@ -390,12 +390,12 @@ export default function CreateTeam() {
 
             <div className="bg-white rounded-lg shadow p-6">
               <div className="pb-3">
-                <h2 className="text-xl font-semibold flex items-center">
+                <h2 className="text-xl font-semibold flex items-center text-gray-900">
                   <Info className="h-5 w-5 mr-2 text-blue-500" />
                   Team Tips
                 </h2>
               </div>
-              <ul className="space-y-2 text-sm">
+              <ul className="space-y-2 text-sm text-gray-900">
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">•</span>
                   Select players from universities playing in upcoming matches
