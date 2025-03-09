@@ -57,8 +57,8 @@ A fantasy cricket platform for university cricket tournaments built with Next.js
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/spiritx-competition.git
-   cd spiritx-competition
+   git clone https://github.com/HimalaGunathilaka/SpiritX_Code_Rangers_02.git
+   cd spirit11
    ```
 
 2. Install dependencies:
