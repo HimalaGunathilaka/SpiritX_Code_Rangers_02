@@ -98,7 +98,7 @@ export default function PlayerStatsPage() {
       value: calvalue === Infinity ? null : calvalue || null,
     });
 
-  }, [selectedPlayer]);
+  }, [selectedPlayer, players]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value.toLowerCase();
