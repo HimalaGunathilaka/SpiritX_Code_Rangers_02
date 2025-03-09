@@ -18,6 +18,14 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  points: {
+    type: Number,
+    default: 0,
+  },
+  teamname: {
+    type: String,
+    required: true,
+  },
   
 }, { timestamps: true, versionKey: false });
 

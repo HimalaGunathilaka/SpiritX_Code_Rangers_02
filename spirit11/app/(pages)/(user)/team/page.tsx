@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { set } from "mongoose";
 
 interface Player {
   id: number;
@@ -24,7 +25,7 @@ interface Team {
 
 export default function Team() {
   const router = useRouter();
-  
+  const userid= '67cc39310e8e5d2de616a75a';
   // Mock data for team
   const [team, setTeam] = useState<Team>({
     name: "",
@@ -36,10 +37,11 @@ export default function Team() {
   });
 
   const [deletedPlayers, setDeletedPlayers] = useState<number[]>([]);
+  const [balance,setbalnce] = useState<number>(0);
 
   useEffect(() => {
     async function fetchTeam() {
-      const response = await fetch('http://localhost:3000/api/user?id=67cc39310e8e5d2de616a75a', {
+      const response = await fetch(`http://localhost:3000/api/user?id=${userid}`, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -56,7 +58,7 @@ export default function Team() {
       setTeam({
         name: "Cricket Titans",
         points: 0,
-        rank: 42,
+        rank: 2,
         captain: players[0],
         viceCaptain: players[1],
         players: players
@@ -68,22 +70,25 @@ export default function Team() {
 
   const handleRemovePlayers = async () => {
     // Calculate the remaining budget after removing players
-    const remainingBudget = team.players
-      .filter(player => deletedPlayers.includes(player.id))
-      .reduce((sum, player) => sum + player.price, 0);
+    console.log(team.players);
+    console.log(deletedPlayers);
+   
+      
+    console.log('Deleted Players Price:', balance);
+    console.log(balance); 
     const response = await fetch('http://localhost:3000/api/user', {
       method: 'PATCH',
       headers: {
       'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-      userId: '67cc39310e8e5d2de616a75a',
+      userId: userid,
       playerIds: deletedPlayers,
-      budget: remainingBudget
+      budget: balance
       })
     });
 
-    
+    setbalnce(0);
     const data = await response.json();
     setDeletedPlayers([]);
     // Update team state if needed based on response
@@ -104,14 +109,24 @@ const handlereset = async () => {
     price: parseFloat(player.value),
     stats: `Runs: ${player.totalruns}, Wickets: ${player.wickets}`
   }));
+const [points, setPoints] = useState<number>(0);
+
+useEffect(() => {
+  setPoints(((totalValue/1000) -100)/9);
   setTeam({
     name: "Cricket Titans",
-    points: 0,
-    rank: 42,
+    points: points,
+    rank: 2,
     captain: players[0],
     viceCaptain: players[1],
     players: players
   });
+  console.log("points",points);
+});
+
+
+  
+  setbalnce(0);
 };
   // Group players by role
   const batsmen = team.players.filter(player => player.role === "batsman");
@@ -120,7 +135,9 @@ const handlereset = async () => {
   const wicketKeepers = team.players.filter(player => player.role === "wicket-keeper");
 
   // Calculate total team value
+  
   const totalValue = team.players.reduce((sum, player) => sum + player.price, 0);
+  const totalPoints = ((totalValue/1000) -100)/9;;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -227,7 +244,7 @@ const handlereset = async () => {
                         Total Points
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        {team.points}
+                        {totalPoints.toFixed(2)}
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -340,6 +357,10 @@ const handlereset = async () => {
                               ...prevTeam,
                               players: prevTeam.players.filter(p => p.id !== player.id)
                               }));
+                              // console.log("player.id");
+                              // console.log(player.price);
+                              setbalnce(balance + player.price);
+                              // console.log("b",balance);
                               setDeletedPlayers(prevDeleted => [...prevDeleted, player.id]);
                             }}
                             >
@@ -360,42 +381,6 @@ const handlereset = async () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-interface PlayerBubbleProps {
-  player: Player;
-  isCaptain: boolean;
-  isViceCaptain: boolean;
-}
-
-function PlayerBubble({ player, isCaptain, isViceCaptain }: PlayerBubbleProps) {
-  return (
-    <div className="relative">
-      <div className={`h-14 w-14 rounded-full ${
-        player.role === 'batsman' ? 'bg-blue-100 border-blue-500' :
-        player.role === 'bowler' ? 'bg-green-100 border-green-500' :
-        player.role === 'all-rounder' ? 'bg-purple-100 border-purple-500' :
-        'bg-yellow-100 border-yellow-500'
-      } border-2 flex items-center justify-center`}>
-        <span className="text-xs font-medium text-center">
-          {player.name.split(' ').map(n => n[0]).join('')}
-        </span>
-      </div>
-      {isCaptain && (
-        <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-yellow-400 border border-white flex items-center justify-center">
-          <span className="text-xs font-bold text-white">C</span>
-        </div>
-      )}
-      {isViceCaptain && (
-        <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-blue-500 border border-white flex items-center justify-center">
-          <span className="text-xs font-bold text-white">V</span>
-        </div>
-      )}
-      <div className="mt-1 text-xs text-center font-medium truncate w-14">
-        {player.name.split(' ')[0]}
       </div>
     </div>
   );

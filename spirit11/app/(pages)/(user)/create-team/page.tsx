@@ -1,7 +1,7 @@
 "use client";
 import { Search, Filter, DollarSign, ArrowLeft, Info } from "lucide-react";
 import { PlayerCard, SelectedPlayerCard } from "./components";
-import { useEffect, useState, MouseEvent } from "react";
+import { useEffect, useState, MouseEvent, use } from "react";
 import { set } from "mongoose";
 
 export default function CreateTeam() {
@@ -23,12 +23,13 @@ export default function CreateTeam() {
   const playersPerPage = 10;
   const [budget, setBudget] = useState<number>(0);
   const[newSelectedPlayers, setNewSelectedPlayers] = useState<Player[]>([]);
+  const userid = "67cc39310e8e5d2de616a75a";
 
   // make API call to fetch selected players of user
   useEffect(() => {
     async function fetchSelectedPlayers() {
       try {
-        const response = await fetch("http://localhost:3000/api/user?id=67cc39310e8e5d2de616a75a", {
+        const response = await fetch(`http://localhost:3000/api/user?id=${userid}`, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -137,7 +138,7 @@ export default function CreateTeam() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: "67cc39310e8e5d2de616a75a",
+          userId: userid,
           playerIds: newSelectedPlayers.map((player) => player._id),
           budget: remainingBudget,
         }),
@@ -171,7 +172,7 @@ export default function CreateTeam() {
             <div className="flex items-center space-x-4">
               <div className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium flex items-center">
                 <DollarSign className="h-4 w-4 mr-1" />
-                Budget: ${remainingBudget} / ${budget}
+                Budget: ${remainingBudget.toFixed(2)} / ${budget.toFixed(2)}
               </div>
                 <button 
                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
@@ -206,10 +207,7 @@ export default function CreateTeam() {
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
-                <button className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filters
-                </button>
+              
               </div>
 
               <div>
@@ -319,7 +317,7 @@ export default function CreateTeam() {
                     Budget
                   </h3>
                   <div className="flex justify-between text-sm mb-1">
-                    <span>${remainingBudget} / ${budget}</span>
+                    <span>${remainingBudget.toFixed(2)} / ${budget.toFixed(2)}</span>
                     <span>{((remainingBudget / budget) * 100).toFixed(2)}% remaining</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">

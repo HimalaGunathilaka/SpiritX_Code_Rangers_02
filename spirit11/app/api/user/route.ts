@@ -145,7 +145,8 @@ export const PATCH = async (request: Request) => {
       await player.save();
     }
 
-    user.budget = user.budget+budget;
+    user.budget += budget;
+    console.log(budget);
     await user.save();
 
     return new NextResponse(JSON.stringify(user), { status: 200 });

@@ -30,7 +30,7 @@ export default function Leaderboard() {
   useEffect(()=>{
     async function getUsers() {
       try {
-        const response = await fetch('api/user', {
+        const response = await fetch('api/user/users', {
           headers: {
             'Content-Type': 'application/json'
           }
