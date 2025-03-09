@@ -160,6 +160,7 @@ const SignupPage = () => {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
+          username: formData.username,
           password: formData.password,
           teamname: formData.teamname,
         }),
@@ -475,15 +476,9 @@ const SignupPage = () => {
             </button>
           </form>
 
-          <p className={`mt-4 text-center text-sm ${
-            isDarkMode ? 'text-gray-300' : 'text-gray-600'
-          }`}>
-            Already have an account?{' '}
-            <a href="/login" className={`${
-              isDarkMode
-                ? 'text-green-400 hover:text-green-300'
-                : 'text-green-600 hover:text-green-500'
-            }`}>
+          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            Already have an account?{" "}
+            <a href="/user/login" className={`hover:underline ${isDarkMode ? 'text-gray-300' : 'text-blue-500'}`}>
               Sign in
             </a>
           </p>

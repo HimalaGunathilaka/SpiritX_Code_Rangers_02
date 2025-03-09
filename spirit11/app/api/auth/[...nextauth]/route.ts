@@ -1,20 +1,17 @@
 import User from '@/models/user';
 import connectMongo from '@/lib/dbconfig';
-import clientPromise from '@/lib/mongodb';
 import NextAuth, { NextAuthOptions, Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import bcrypt from 'bcryptjs';
 
 interface Credentials {
-  username: string;
+  email: string;
   password: string;
 }
 
 interface UserType {
   _id: string;
   email: string;
-  username: string;
   password: string;
   role: string;
   firstName: string;
@@ -24,10 +21,10 @@ interface UserType {
 declare module 'next-auth' {
   interface Session {
     user: {
+      id?: string | null;
       name?: string | null;
       email?: string | null;
       image?: string | null;
-      username?: string | null;
     };
   }
 }
@@ -37,19 +34,19 @@ const options: NextAuthOptions = {
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        username: { label: 'Username', type: 'text' },
+        email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials: Credentials | undefined) {
-        if (!credentials?.username || !credentials?.password) {
+        if (!credentials?.email || !credentials?.password) {
           throw new Error('Please provide all required fields');
         }
 
         await connectMongo();
 
-        const user = await User.findOne({ username: credentials.username });
+        const user = await User.findOne({ email: credentials.email });
         if (!user) {
-          throw new Error('No user found with this username');
+          throw new Error('No user found with this email');
         }
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
@@ -61,8 +58,6 @@ const options: NextAuthOptions = {
           id: user._id.toString(),
           name: user.name,
           email: user.email,
-          username: user.username,
-          teamname: user.teamname
         };
       },
     }),
@@ -73,15 +68,13 @@ const options: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.username = user.username;
-        token.teamname = user.teamname;
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user.username = token.username;
-        session.user.teamname = token.teamname;
+        session.user.id = token.id;
       }
       return session;
     },

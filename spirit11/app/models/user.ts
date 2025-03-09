@@ -23,7 +23,8 @@ const userSchema = new mongoose.Schema({
   },
   budget: {
     type: Number,
-    default: 21581529.43,
+    default: 10000000,
+    required: false,
   },
   points: {
     type: Number,

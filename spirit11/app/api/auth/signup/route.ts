@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
+    // Create new user with default values for team, budget, and points
     const user = await User.create({
       name,
       email,
@@ -63,6 +63,8 @@ export async function POST(req: NextRequest) {
       password: hashedPassword,
       teamname,
       team: [],
+      budget: 0,
+      points: 0,
       createdAt: new Date(),
       updatedAt: new Date()
     });

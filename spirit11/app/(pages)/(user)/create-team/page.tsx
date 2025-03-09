@@ -1,10 +1,19 @@
 "use client";
 import { Search, Filter, DollarSign, ArrowLeft, Info } from "lucide-react";
 import { PlayerCard, SelectedPlayerCard } from "./components";
-import { useEffect, useState, MouseEvent, use } from "react";
-import { set } from "mongoose";
+import { useEffect, useState, MouseEvent } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function CreateTeam() {
+  const router = useRouter();
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
+
   // fetch available players
   interface Player {
     _id: string;
@@ -22,14 +31,16 @@ export default function CreateTeam() {
   const [remainingBudget, setRemainingBudget] = useState<number>(100000);
   const playersPerPage = 10;
   const [budget, setBudget] = useState<number>(0);
-  const[newSelectedPlayers, setNewSelectedPlayers] = useState<Player[]>([]);
-  const userid = "67cc39310e8e5d2de616a75a";
+  const [newSelectedPlayers, setNewSelectedPlayers] = useState<Player[]>([]);
+  const userId = session?.user?.id;
 
   // make API call to fetch selected players of user
   useEffect(() => {
+    // console.log(userId);
     async function fetchSelectedPlayers() {
+      if (!session?.user?.id) return;
       try {
-        const response = await fetch(`http://localhost:3000/api/user?id=${userid}`, {
+        const response = await fetch(`http://localhost:3000/api/user?id=${session?.user?.id}`, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -43,7 +54,8 @@ export default function CreateTeam() {
           value: player.value,
           category: player.category,
         }));
-        console.log(selectedPlayers);
+        // console.log(selectedPlayers);
+        // console.log(data);
         setSelectedPlayers(selectedPlayers);
         setRemainingBudget(data.budget);
         setBudget(data.budget);
@@ -138,7 +150,7 @@ export default function CreateTeam() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: userid,
+          userId: userId,
           playerIds: newSelectedPlayers.map((player) => player._id),
           budget: remainingBudget,
         }),
@@ -172,7 +184,7 @@ export default function CreateTeam() {
             <div className="flex items-center space-x-4">
               <div className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium flex items-center">
                 <DollarSign className="h-4 w-4 mr-1" />
-                Budget: ${remainingBudget.toFixed(2)} / ${budget.toFixed(2)}
+                Budget: Rs{remainingBudget.toFixed(2)} / Rs{budget.toFixed(2)}
               </div>
                 <button 
                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
@@ -317,7 +329,7 @@ export default function CreateTeam() {
                     Budget
                   </h3>
                   <div className="flex justify-between text-sm mb-1">
-                    <span>${remainingBudget.toFixed(2)} / ${budget.toFixed(2)}</span>
+                    <span>Rs{remainingBudget.toFixed(2)} / Rs{budget.toFixed(2)}</span>
                     <span>{((remainingBudget / budget) * 100).toFixed(2)}% remaining</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
