@@ -28,7 +28,7 @@ export function PlayerCard({ name, university, value, category, selected, onAdd,
           <div className="flex flex-col md:flex-row items-center md:space-x-6 mt-4 md:mt-0">
             <div className="text-center">
               <p className="text-xs text-gray-500">Value</p>
-              <p className="font-medium">${value}</p>
+              <p className="font-medium">Rs{value}</p>
             </div>
             <div className="text-center">
               <p className="text-xs text-gray-500">Category</p>
@@ -68,12 +68,12 @@ export function SelectedPlayerCard({ name, university, type, price }: SelectedPl
         </div>
         <div>
           <p className="font-medium text-sm">{name}</p>
-          <p className="text-xs text-gray-500">{university}</p>
+          <p className="text-xs text-gray-900">{university}</p>
         </div>
       </div>
       <div className="text-right">
         <span className="inline-block px-2 py-0.5 text-xs border border-gray-300 rounded-full mb-1">{type}</span>
-        <p className="text-xs font-medium">${price}</p>
+        <p className="text-xs font-medium">Rs{price}</p>
       </div>
     </div>
   );

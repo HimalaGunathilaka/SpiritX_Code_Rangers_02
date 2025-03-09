@@ -14,12 +14,12 @@ const LoginPage = () => {
     setLoading(true);
     e.preventDefault();
 
-    const username = e.currentTarget.username.value;
+    const email = e.currentTarget.email.value;
     const password = e.currentTarget.password.value;
 
     const result = await signIn("credentials", {
       redirect: false,
-      username: username,
+      email: email,
       password: password,
     });
 
@@ -29,7 +29,7 @@ const LoginPage = () => {
       setLoading(false);
     } else {
       setLoading(false);
-      router.push("/dashboard");
+      router.push("/user");
     }
   };
 
@@ -78,21 +78,21 @@ const LoginPage = () => {
         <form onSubmit={handleOnSubmit} className="w-full max-w-sm space-y-4">
           <div>
             <label
-              htmlFor="username"
+              htmlFor="email"
               className={`block font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
             >
-              Username
+              Email
             </label>
             <input
-              type="text"
-              id="username"
+              type="email"
+              id="email"
               className={`w-full px-4 py-2 border rounded-md focus:ring-2 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-300 focus:ring-gray-500' : 'border-gray-300 focus:ring-blue-500'} focus:outline-none`}
-              placeholder="Enter your username"
+              placeholder="Enter your email"
               required
             />
             {error === "No user found." && (
               <p className="text-red-500 text-sm">
-                Username is invalid. Please try again.
+                Email is not registered. Please try again.
               </p>
             )}
           </div>
@@ -116,7 +116,7 @@ const LoginPage = () => {
               </p>
             )}
           </div>
-          {error === "Invalid username or password" && (
+          {error === "Invalid email or password" && (
             <p className="text-red-500 text-sm">
               {error}
             </p>

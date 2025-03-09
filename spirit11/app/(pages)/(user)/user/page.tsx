@@ -1,50 +1,86 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+
+// Define interfaces outside the component
+interface Player {
+  _id: string;
+  name: string;
+  university: string;
+  value: string;
+  category: string;
+  totalruns: number;
+  ballsfaced: number;
+  inningsplayed: number;
+  wickets: number;
+  overbowled: number;
+  runsconceded: number;
+  available: boolean;
+}
+
+interface User {
+  _id: string;
+  name: string;
+  password: string;
+  teamname: string;
+  team: Player[];
+  budget: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Constants for mock data
+const UPCOMING_MATCHES = [
+  {
+    id: 1,
+    team1: "University of Colombo",
+    team2: "University of Peradeniya",
+    date: "Today, 2:00 PM",
+    venue: "Colombo Cricket Ground"
+  },
+  {
+    id: 2,
+    team1: "University of Moratuwa",
+    team2: "University of Kelaniya",
+    date: "Tomorrow, 10:00 AM",
+    venue: "Moratuwa University Stadium"
+  }
+];
 
 export default function Dashboard() {
   const router = useRouter();
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
 
-
-  // get player stats and user info
-  interface Player {
-    _id: string;
-    name: string;
-    university: string;
-    value: string;
-    category: string;
-    totalruns: number;
-    ballsfaced: number;
-    inningsplayed: number;
-    wickets: number;
-    overbowled: number;
-    runsconceded: number;
-    available: boolean;
-  }
-
-  interface User {
-    _id: string;
-    name: string;
-    password: string;
-    team: Player[];
-    budget: number;
-    createdAt: string;
-    updatedAt: string;
-  }
-
+  // Initialize all state variables at the top level
   const [userData, setUserData] = useState<User | null>(null);
+  const [totalValue, setTotalValue] = useState(0);
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [activeTab, setActiveTab] = useState("team");
 
+  // Fetch user data effect
   useEffect(() => {
     const fetchUserData = async () => {
+      if (!session?.user?.id) return;
+      
       try {
-        const response = await fetch("http://localhost:3000/api/user?id=67cc39310e8e5d2de616a75a", {
+        const response = await fetch(`/api/user/${session.user.id}`, {
           headers: {
             "Content-Type": "application/json"
           }
         });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+        
         const data: User = await response.json();
         const mappedData: User = {
           ...data,
@@ -54,51 +90,45 @@ export default function Dashboard() {
           }))
         };
         setUserData(mappedData);
-        console.log(mappedData);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
 
-    fetchUserData();
-    // console.log(userData);
-  }, []);
-  const[totalValue, setTotalValue] = useState(0);
-  const[totalPoints, setTotalPoints] = useState(0);
+    if (status === 'authenticated') {
+      fetchUserData();
+    }
+  }, [session, status]);
+
+  // Calculate total value and points effect
   useEffect(() => {
     if (userData) {
-      const totalValue = userData.team.reduce((acc, player) => acc + parseFloat(player.value), 0);
-      setTotalValue(totalValue);
-      console.log("Total Team Value:", totalValue);
-      const totalPoints = ((totalValue/1000) -100)/9;
-      setTotalPoints(totalPoints);
+      const calculatedTotalValue = userData.team.reduce((acc, player) => acc + parseFloat(player.value), 0);
+      setTotalValue(calculatedTotalValue);
+      const calculatedTotalPoints = ((calculatedTotalValue/1000) -100)/9;
+      setTotalPoints(calculatedTotalPoints);
     }
   }, [userData]);
-  
-  // Mock data for dashboard
+
+  // Loading state
+  if (status === 'loading' || !userData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
   const userTeam = {
-    name: "Cricket Titans",
-    points: totalPoints.toFixed(2),
+    name: userData.name || "Team Name",
+    teamname: userData.teamname || "Team Name",
+    points: Math.max(0, totalPoints).toFixed(2),
     rank: 2,
     players: userData?.team.length ?? 0,
-    captainName: "A. Perera",
-    budget: {
-      total: 10000000,
-      used: 8500000,
-      remaining: 1500000
-    },
-    playerComposition: {
-      batsmen: 4,
-      bowlers: 3, 
-      allRounders: 3,
-      wicketKeepers: 1
-    }
+    budget: userData.budget || 0
   };
 
-  
-  
-
-  // Add team players mock data
+  // Mock data for dashboard
   const teamPlayers = [
     {
       id: 1,
@@ -158,8 +188,6 @@ export default function Dashboard() {
       venue: "Moratuwa University Stadium"
     }
   ];
-
-  const [activeTab, setActiveTab] = useState("team");
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -290,7 +318,7 @@ export default function Dashboard() {
                             </dt>
                             <dd>
                               <div className="text-lg font-medium text-gray-900">
-                                {userTeam.name}
+                                {userTeam.teamname}
                               </div>
                             </dd>
                           </dl>

@@ -5,10 +5,9 @@ import User from '@/models/user';
 
 export async function POST(req: NextRequest) {
   try {
-    const { firstName, lastName, email, username, password } = await req.json();
+    const { name, email, username, password, teamname } = await req.json();
 
-    // Validate required fields
-    if (!firstName || !lastName || !email || !username || !password) {
+    if (!name || !email || !username || !password || !teamname) {
       return NextResponse.json(
         { message: 'All fields are required' },
         { status: 400 }
@@ -16,10 +15,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Connect to MongoDB
-    await connectMongo();
+    try {
+      await connectMongo();
+    } catch (error) {
+      console.error('MongoDB connection error:', error);
+      return NextResponse.json(
+        { message: 'Database connection failed' },
+        { status: 500 }
+      );
+    }
 
     // Check if email already exists
-    const existingEmail = await User.findOne({ email: email.toLowerCase() });
+    const existingEmail = await User.findOne({ email });
     if (existingEmail) {
       return NextResponse.json(
         { message: 'Email already registered' },
@@ -36,49 +43,59 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    // Check if team name already exists
+    const existingTeam = await User.findOne({ teamname });
+    if (existingTeam) {
+      return NextResponse.json(
+        { message: 'Team name already taken' },
+        { status: 400 }
+      );
+    }
 
-    // Create new user
-    const newUser = await User.create({
-      firstName,
-      lastName,
-      email: email.toLowerCase(),
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user with default values for team, budget, and points
+    const user = await User.create({
+      name,
+      email,
       username,
       password: hashedPassword,
-     
+      teamname,
+      team: [],
+      budget: 0,
+      points: 0,
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
 
-    // Remove password from response
-    const userResponse = {
-      id: newUser._id,
-      firstName: newUser.firstName,
-      lastName: newUser.lastName,
-      email: newUser.email,
-      username: newUser.username,
-      
-    };
-
     return NextResponse.json(
-      { message: 'User created successfully', user: userResponse },
+      {
+        message: 'User created successfully',
+        user: {
+          name: user.name,
+          email: user.email,
+          username: user.username,
+          teamname: user.teamname
+        }
+      },
       { status: 201 }
     );
   } catch (error: any) {
-    console.error('Error creating user:', error);
+    console.error('Signup error:', error);
     
-    // Handle mongoose validation errors
     if (error.name === 'ValidationError') {
-      const validationErrors = Object.values(error.errors).map(
-        (err: any) => err.message
-      );
       return NextResponse.json(
-        { message: 'Validation error', errors: validationErrors },
+        { 
+          message: 'Validation error',
+          errors: Object.values(error.errors).map((err: any) => err.message)
+        },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { message: 'Error creating user: ' + (error.message || 'Unknown error') },
       { status: 500 }
     );
   }

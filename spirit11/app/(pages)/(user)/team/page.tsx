@@ -4,6 +4,7 @@ import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { set } from "mongoose";
+import { useSession } from 'next-auth/react';
 
 interface Player {
   id: number;
@@ -25,7 +26,14 @@ interface Team {
 
 export default function Team() {
   const router = useRouter();
-  const userid= '67cc39310e8e5d2de616a75a';
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
+
+  const userId = session?.user?.id;
   // Mock data for team
   const [team, setTeam] = useState<Team>({
     name: "",
@@ -41,7 +49,7 @@ export default function Team() {
 
   useEffect(() => {
     async function fetchTeam() {
-      const response = await fetch(`http://localhost:3000/api/user?id=${userid}`, {
+      const response = await fetch(`http://localhost:3000/api/user?id=${userId}`, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -56,7 +64,7 @@ export default function Team() {
         stats: `Runs: ${player.totalruns}, Wickets: ${player.wickets}`
       }));
       setTeam({
-        name: "Cricket Titans",
+        name: data.teamname || "My Team",
         points: 0,
         rank: 2,
         captain: players[0],
@@ -65,7 +73,7 @@ export default function Team() {
       });
     }
     fetchTeam();
-  }, []);
+  }, [userId]);
  
 
   const handleRemovePlayers = async () => {
@@ -82,7 +90,7 @@ export default function Team() {
       'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-      userId: userid,
+      userId: userId,
       playerIds: deletedPlayers,
       budget: balance
       })
@@ -95,7 +103,7 @@ export default function Team() {
   };
 
 const handlereset = async () => {
-  const response = await fetch('http://localhost:3000/api/user?id=67cc39310e8e5d2de616a75a', {
+  const response = await fetch('http://localhost:3000/api/user?id=' + userId, {
     headers: {
       'Content-Type': 'application/json'
     }
