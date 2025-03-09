@@ -24,14 +24,14 @@ export default function BotPage() {
         setMessages([...messages, { role: 'user', content: input }]);
         console.log(input);
         // Send request to the bot API
-        const response = await fetch('http://localhost:3000/api/bot', {
+        const response = await fetch('http://localhost:3000/api/chat/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ text: input })
+            body: JSON.stringify({ message: input })
         });
-
+        console.log(response);
         const data = await response.json();
         console.log(data);
 
