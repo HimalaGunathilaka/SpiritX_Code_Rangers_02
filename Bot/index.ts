@@ -39,7 +39,7 @@ async function startServer() {
 
     // API endpoint to send a message in an existing conversation
     // curl -X POST -H "Content-Type: application/json" -d '{"message": "What team members did you recommend?"}' http://localhost:3000/chat/123456789
-    app.post('/chat/:threadId', async (req: Request, res: Response) => {
+    app.post('/api/chat/:threadId/', async (req: Request, res: Response) => {
       const { threadId } = req.params;
       const { message } = req.body;
       try {
