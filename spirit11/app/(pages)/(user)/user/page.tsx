@@ -72,26 +72,33 @@ export default function Dashboard() {
       
       try {
         const response = await fetch(`/api/user/${session.user.id}`, {
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json"
-          }
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include' // Include credentials for authentication
         });
         
         if (!response.ok) {
-          throw new Error('Failed to fetch user data');
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to fetch user data');
         }
         
         const data: User = await response.json();
         const mappedData: User = {
           ...data,
-          team: data.team.map(player => ({
+          team: Array.isArray(data.team) ? data.team.map(player => ({
             ...player,
-            value: player.value.toString()
-          }))
+            value: player.value?.toString() || "0"
+          })) : []
         };
         setUserData(mappedData);
       } catch (error) {
         console.error("Error fetching user data:", error);
+        // Handle the error appropriately
+        if (error instanceof Error) {
+          console.error(error.message);
+        }
       }
     };
 
