@@ -264,12 +264,12 @@ const SignupPage = () => {
               <h1 className={`text-3xl font-bold mb-4 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
-                Welcome to Code Rangers
+                Welcome to Spirit11
               </h1>
               <p className={`text-lg ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>
-                Join our community of developers and start your journey
+                Create an account to log into the Admin Panel and manage the players and tournaments.
               </p>
             </div>
           </div>
