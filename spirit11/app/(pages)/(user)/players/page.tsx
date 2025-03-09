@@ -4,7 +4,7 @@ import PlayerCard from '@/components/player-card';
 import { Search, Filter, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
 
 interface PlayerInfo {
-  _id: number;
+  _id: string;
   name: string;
   university: string;
   role: string;
@@ -15,6 +15,9 @@ interface PlayerInfo {
   inningsplayed: number;
   wickets: number;
   matches: number;
+  overbowled: number;
+  runsconceded: number;
+  available: boolean;
 }
 
 
