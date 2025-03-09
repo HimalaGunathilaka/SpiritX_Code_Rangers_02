@@ -111,6 +111,41 @@ export default function PlayerStatsPage() {
     setFilteredPlayers(filtered);
   };
 
+  const exportToCSV = () => {
+    if (!selectedPlayer) {
+      alert('Please select a player to export data.');
+      return;
+    }
+
+    const csvData = [
+      ['Name', selectedPlayer.name],
+      ['University', selectedPlayer.university],
+      ['Category', selectedPlayer.category],
+      ['Total Runs', selectedPlayer.totalruns],
+      ['Balls Faced', selectedPlayer.ballsfaced],
+      ['Innings Played', selectedPlayer.inningsplayed],
+      ['Wickets', selectedPlayer.wickets],
+      ['Overs Bowled', selectedPlayer.overbowled],
+      ['Runs Conceded', selectedPlayer.runsconceded],
+      ['Batting Strike Rate', selectedPlayerStats.battingStrikeRate?.toFixed(2) || 'N/A'],
+      ['Bowling Strike Rate', selectedPlayerStats.bowlingStrikeRate?.toFixed(2) || 'N/A'],
+      ['Batting Average', selectedPlayerStats.battingAverage?.toFixed(2) || 'N/A'],
+      ['Economy Rate', selectedPlayerStats.economyRate?.toFixed(2) || 'N/A'],
+      ['Points', selectedPlayerStats.points?.toFixed(2) || 'N/A'],
+      ['Value', selectedPlayerStats.value ? `Rs. ${selectedPlayerStats.value.toLocaleString("en-IN").replace(/,/g, ' ')}` : 'N/A'],
+      ['Generated At', new Date().toLocaleString().replace(',', ' ')],
+    ];
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + csvData.map(e => e.join(',')).join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `${selectedPlayer.name}_stats.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
 
   return (
     <div className="space-y-6">
@@ -120,7 +155,10 @@ export default function PlayerStatsPage() {
           <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
             Generate Report
           </button>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+          <button 
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
+            onClick={exportToCSV}
+          >
             Export Data
           </button>
         </div>
